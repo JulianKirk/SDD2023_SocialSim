@@ -2,8 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class HumanBase : StateMachine
-{
+public class HumanStateManager : MonoBehaviour
+{    
     //Basic attributes - scale from 1 to 100
     private int m_intelligence;
     private int m_strength;
@@ -15,6 +15,7 @@ public class HumanBase : StateMachine
     private float m_monthTimer;
     private float temp_monthLengthInSeconds = 10f; //Grab it from a global settings singleton later or something instead
 
+    protected State m_currentState;
     public BuildingState buildingState = new BuildingState();
     public HuntingState huntingState = new HuntingState();
 
@@ -44,5 +45,11 @@ public class HumanBase : StateMachine
         }
 
         m_currentState.OnStateUpdate(this);
+    }
+
+    public void SwitchState(State newState) 
+    {
+        m_currentState = newState;
+        m_currentState.OnStateEnter(this);
     }
 }

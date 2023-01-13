@@ -4,18 +4,18 @@ using UnityEngine;
 
 public class HuntingState : State
 {
-    public override void OnStateEnter(StateMachine master) 
+    public override void OnStateEnter(HumanStateManager master) 
     {
         Debug.Log("Hunting");
     }
 
-    public override void OnStateUpdate(StateMachine master) 
+    public override void OnStateUpdate(HumanStateManager master) 
     {
         Debug.Log("Update :)");
-    }
 
-    public override void OnStateExit(StateMachine master) 
-    {
-
+        if (Input.GetButtonDown("Jump")) 
+        {
+            OnStateExit(master, master.buildingState);
+        }
     }
 }

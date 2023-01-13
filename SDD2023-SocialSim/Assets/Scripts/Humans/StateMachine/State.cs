@@ -4,9 +4,14 @@ using UnityEngine;
 
 public abstract class State
 {
-    public abstract void OnStateEnter(StateMachine master);
+    public virtual void OnStateEnter(HumanStateManager master) { 
+        Debug.Log("Entering new state");
+    }
 
-    public abstract void OnStateUpdate(StateMachine master);
+    public abstract void OnStateUpdate(HumanStateManager master);
 
-    public abstract void OnStateExit(StateMachine master);
+    public virtual void OnStateExit(HumanStateManager master, State newState) 
+    {
+        master.SwitchState(newState);
+    }
 }
