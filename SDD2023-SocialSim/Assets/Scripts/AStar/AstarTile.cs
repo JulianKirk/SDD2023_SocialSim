@@ -6,5 +6,5 @@ using UnityEngine.Tilemaps;
 [CreateAssetMenu(fileName = "New Astar Tile", menuName = "Tiles/AstarTile")]
 public class AstarTile : Tile
 {
-    
+    public Tile[] allowedNeighbours;
 }
