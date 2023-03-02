@@ -4,13 +4,13 @@ using UnityEngine;
 
 public class BuildingState : State
 {
-    public override void OnStateUpdate(HumanStateManager master) 
+    public override void UpdateState(HumanStateManager master) 
     {
         Debug.Log("Buildling upd");
 
         if (Input.GetButtonDown("Jump")) 
         {
-            OnStateExit(master, master.huntingState);
+            ExitState(master, master.huntingState);
         }
     }
 }

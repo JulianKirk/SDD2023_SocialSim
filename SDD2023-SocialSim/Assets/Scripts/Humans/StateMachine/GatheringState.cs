@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class GatheringState : State
 {
-    public override void OnStateUpdate(HumanStateManager master) 
+    public override void UpdateState(HumanStateManager master) 
     {
 
     }
