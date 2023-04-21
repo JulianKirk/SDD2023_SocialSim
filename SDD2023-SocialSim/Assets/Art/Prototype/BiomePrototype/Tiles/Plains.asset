@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6269c4d1ce24d0844a39b830a88a53b8, type: 3}
-  m_Name: APlains
+  m_Name: Plains
   m_EditorClassIdentifier: 
-  m_Sprite: {fileID: 21300000, guid: a85c1992effd7e642a199ff0dcf62362, type: 3}
+  m_Sprite: {fileID: 21300000, guid: c0471178236bdbf4191622aa156d3e7b, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_Transform:
     e00: 1
@@ -34,9 +34,4 @@ MonoBehaviour:
   m_InstancedGameObject: {fileID: 0}
   m_Flags: 1
   m_ColliderType: 1
-  allowedNeighbours:
-  - {fileID: 11400000, guid: 47bb23bf84a52104f9e2cd30a63a4d14, type: 2}
-  - {fileID: 11400000, guid: 15699db023d9498408444d775914d77b, type: 2}
-  - {fileID: 11400000, guid: 2e0ed551b00b05148a28d7d1e3e112d8, type: 2}
-  - {fileID: 11400000, guid: 37e25d246fbb51140b273cbffd91622b, type: 2}
-  - {fileID: 11400000}
+  allowedNeighbours: []

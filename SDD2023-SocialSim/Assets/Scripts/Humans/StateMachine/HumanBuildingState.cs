@@ -2,15 +2,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BuildingState : State
+public class HumanBuildingState : HumanBaseState
 {
     public override void UpdateState(HumanStateManager master) 
     {
         Debug.Log("Buildling upd");
 
-        if (Input.GetButtonDown("Jump")) 
+        if (Input.GetKeyDown("j")) 
         {
-            ExitState(master, master.huntingState);
+            master.SwitchState(master.huntingState);
         }
     }
 }

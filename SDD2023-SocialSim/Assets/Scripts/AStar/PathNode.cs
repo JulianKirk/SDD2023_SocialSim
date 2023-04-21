@@ -4,20 +4,40 @@ using UnityEngine;
 
 public class PathNode 
 {
-    (int, int) position;
-    int hCost;
-    int gCost;
-    int fCost;
-    bool isWalkable;
-    PathNode parent;
+    public int xPos;
+    public int yPos;
 
-    public PathNode(int x, int y, bool walkable) 
+    public int hCost;
+    public int gCost; //Real gCosts should never be able to get this high
+    public int fCost;
+
+    public bool walkable;
+
+    public PathNode parent;
+
+    public PathNode(int x, int y, bool walk) 
     {
-        position = (x, y);
-        isWalkable = walkable;
+        xPos = x;
+        yPos = y;
+
+        gCost = 10000000;
+
+        walkable = walk;
+
+        parent = null; //Make sure this doesn't override any other calls
     }
 
-    void UpdateFCost() 
+    public PathNode(PathNode oldNode) 
+    {
+        xPos = oldNode.xPos;
+        yPos = oldNode.yPos;
+        gCost = 10000000;
+        parent = null;
+
+        walkable = oldNode.walkable;
+    }
+
+    public void UpdateFCost() 
     {
         fCost = hCost + gCost;
     }

@@ -2,24 +2,26 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class HumanStateManager : MonoBehaviour
+public class HumanStateManager : EntityStateManager
 {    
     //Basic attributes - scale from 1 to 100
     private int m_intelligence;
     private int m_strength;
-    private int m_speed;
     private int m_age; //stored in years
-    //public int social; ----- Might be too annoying to implement
-    //Possibly add other attributes such as weight or height - Depends on complexity and development speed of the earlier ones
+    //protected float m_speed - Inherited from EntityStateManager
 
-    protected State m_currentState;
-    public BuildingState buildingState = new BuildingState();
-    public HuntingState huntingState = new HuntingState();
+    private HumanBaseState m_currentState;// - Inherited from EntityStateManager
+    public HumanBuildingState buildingState = new HumanBuildingState();
+    public HumanHuntingState huntingState = new HumanHuntingState();
+    public HumanWanderingState wanderingState = new HumanWanderingState();
 
-    void Awake() 
+    protected override void Awake() 
     {
-        m_currentState = buildingState;
-        Debug.Log("State Machine Awoken");
+        base.Awake(); //Awake function of EntityStateManager
+
+        m_currentState = wanderingState;
+
+        m_currentState.EnterState(this);
     }
 
     public void OnSpawn(int iq, int str, int spd) //For parents it will input an average with a deviation 
@@ -34,10 +36,13 @@ public class HumanStateManager : MonoBehaviour
     void Update()
     {
         m_currentState.UpdateState(this);
+
+        FollowPath(); //Only runs if a path is defined
     }
 
-    public void SwitchState(State newState) 
+    public override void SwitchState(HumanBaseState newState) 
     {
+        m_currentState.ExitState(this);
         m_currentState = newState;
         m_currentState.EnterState(this);
     }
