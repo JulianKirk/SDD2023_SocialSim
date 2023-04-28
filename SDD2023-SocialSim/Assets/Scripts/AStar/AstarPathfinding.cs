@@ -9,7 +9,7 @@ public class AstarPathfinding
 
     public static AstarPathfinding instance { get { return _instance.Value; } }
 
-    private AstarPathfinding(){}
+    // private AstarPathfinding(){}
 
     // PathNode[,] DefaultGrid; --OLD GRID STUFF
 

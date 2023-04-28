@@ -5,6 +5,7 @@ using UnityEngine;
 public abstract class EntityStateManager : MonoBehaviour
 {
     public float m_health;
+    protected int m_age; //Stored in years
     protected float m_speed; //In (m/s) - Also implemented in human and animal state machines
 
     protected Rigidbody2D rBody; // Set in start or awake
@@ -18,6 +19,8 @@ public abstract class EntityStateManager : MonoBehaviour
         m_speed = 2; //From EntityStateManager
 
         rBody = gameObject.GetComponent<Rigidbody2D>();
+
+        WorldManager.instance.OnNewYear += OnNewYear;
     }
 
     public abstract void SwitchState(HumanBaseState newState);
@@ -86,5 +89,25 @@ public abstract class EntityStateManager : MonoBehaviour
                 }
             }
         }
+    }
+
+    public void TakeDamage(float damage) 
+    {
+        m_health -= damage;
+
+        if (m_health <= 0) 
+        {
+            Die();
+        }
+    }
+
+    public virtual void Die() //Most animals will drop meat, human deaths will increase a death counter stored in the world manager
+    {
+        Destroy(gameObject);
+    }
+
+    protected void OnNewYear() 
+    {
+        m_age++;
     }
 }

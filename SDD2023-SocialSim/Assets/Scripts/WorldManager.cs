@@ -10,9 +10,7 @@ public class WorldManager : MonoBehaviour
 
     public static WorldManager instance { get { return _instance.Value; } }
 
-    private WorldManager(){}
-
-    int TimeGoal; //This will be set in the "Create new simulation" in-game menu (in years)
+    public int TimeGoal; //This will be set in the "Create new simulation" in-game menu (in years)
     int TimePassed = 0; //In years
 
     float yrsPerSecond; //Set in the "Create new simulation" menu

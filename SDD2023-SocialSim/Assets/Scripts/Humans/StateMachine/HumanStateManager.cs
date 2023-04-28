@@ -7,7 +7,7 @@ public class HumanStateManager : EntityStateManager
     //Basic attributes - scale from 1 to 100
     private int m_intelligence;
     private int m_strength;
-    private int m_age; //stored in years
+    //protected int m_age - Inherited from EntityStateManager
     //protected float m_speed - Inherited from EntityStateManager
 
     private HumanBaseState m_currentState;// - Inherited from EntityStateManager
