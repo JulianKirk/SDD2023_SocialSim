@@ -2,34 +2,34 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class HumanHuntingState : HumanBaseState
+public class HumanHuntingState : State<HumanStateManager>
 {
+    float huntingTimeLimit = 3f;
+    float followInterval= 1f;
+    float timeSinceLastFollow;
+
     public override void EnterState(HumanStateManager master) 
     {
         Debug.Log("Hunting Started.");
+
+        timeSinceLastFollow = followInterval;
+
+        master.GeneratePath((int)master.animalSense.transform.position.x, (int)master.animalSense.transform.position.y);
     }
 
     public override void UpdateState(HumanStateManager master) 
     {
+        timeSinceLastFollow -= Time.deltaTime;
 
-        if (Input.GetKeyDown("j"))
+        if (master.animalSense == null) 
         {
-            master.SwitchState(master.buildingState);
-        }
-
-        if (Input.GetKeyDown("return")) 
+            huntingTimeLimit -= Time.deltaTime;
+            master.SwitchState(master.wanderingState);
+        } 
+        else if (timeSinceLastFollow <= 0) 
         {
-            int x = Random.Range(1, 100);
-            int y = Random.Range(1, 100);
-
-            bool path = master.GeneratePath(x, y);
-
-            while (!path)
-            {
-                x = Random.Range(1, 100);
-                y = Random.Range(1, 100);
-                path = master.GeneratePath(x, y);
-            }
+            master.GeneratePath((int)master.animalSense.transform.position.x, (int)master.animalSense.transform.position.y);
+            timeSinceLastFollow = followInterval;
         }
     }
 

@@ -4,11 +4,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class WorldManager : MonoBehaviour
+public class WorldManager : GenericSingleton<WorldManager>
 {
-    private static readonly Lazy<WorldManager> _instance = new Lazy<WorldManager>(() => new WorldManager());
+    // private static readonly Lazy<WorldManager> _instance = new Lazy<WorldManager>(() => new WorldManager());
 
-    public static WorldManager instance { get { return _instance.Value; } }
+    // public static WorldManager instance { get { return _instance.Value; } }
+
+    //public WorldManager instance = gameObject.transform.parent.gameobject.GetComponent<WorldManager>();
 
     public int TimeGoal; //This will be set in the "Create new simulation" in-game menu (in years)
     int TimePassed = 0; //In years
@@ -20,7 +22,7 @@ public class WorldManager : MonoBehaviour
     public event Action OnNewYear; //Event that will be received by all AI to trigger aging processes
 
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         
     }

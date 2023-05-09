@@ -48,7 +48,7 @@ public class AstarPathfinding
             if(currentNode == endNode) 
             {
                 Debug.Log("Astar Succeeded. Iterated " + tempIterationCount + " times.");
-                return GenerateFinalPath(currentNode);
+                return GenerateFinalPath(startNode, currentNode);
             }
 
             OpenList.Remove(currentNode);
@@ -84,7 +84,7 @@ public class AstarPathfinding
         return null; //new List<PathNode>(); //Just return an empty list if it somehow fails
     }
 
-    private List<PathNode> GenerateFinalPath(PathNode finalNode)
+    private List<PathNode> GenerateFinalPath(PathNode startNode, PathNode finalNode)
     {
         List<PathNode> path = new List<PathNode>();
 
@@ -97,6 +97,8 @@ public class AstarPathfinding
             path.Add(currentNode.parent);
             currentNode = currentNode.parent;
         }
+
+        path.Add(startNode); //So that it can stay on the same tile if need be
 
         path.Reverse();
 

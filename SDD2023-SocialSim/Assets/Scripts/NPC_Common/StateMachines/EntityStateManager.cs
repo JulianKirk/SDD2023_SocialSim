@@ -10,9 +10,11 @@ public abstract class EntityStateManager : MonoBehaviour
 
     protected Rigidbody2D rBody; // Set in start or awake
 
-    protected PathNode currentTarget;
+    public PathNode currentTarget; //Public so that state scripts can see if the entity is currently chasing something
     protected List<PathNode> currentPath;
     protected int currentPathIndex;
+
+    public Vector2Int homePosition;
 
     protected virtual void Awake() 
     {
@@ -21,9 +23,12 @@ public abstract class EntityStateManager : MonoBehaviour
         rBody = gameObject.GetComponent<Rigidbody2D>();
 
         WorldManager.instance.OnNewYear += OnNewYear;
-    }
 
-    public abstract void SwitchState(HumanBaseState newState);
+        homePosition = new Vector2Int((int)transform.position.x, (int)transform.position.y); //Set the initial home position to be where the entity first spawns
+    }
+    
+    public virtual void SwitchState(State<AnimalStateManager> newState) {}
+    public virtual void SwitchState(State<HumanStateManager> newState) {}
 
     public bool GeneratePath(int targetX, int targetY) //Needs to be called by state classes, bool indicates if it failed or not
     {
@@ -106,8 +111,20 @@ public abstract class EntityStateManager : MonoBehaviour
         Destroy(gameObject);
     }
 
-    protected void OnNewYear() 
+    protected abstract void OnNewYear();
+
+    public void Wander(int radius) 
     {
-        m_age++;
+        int x = (int)transform.position.x + Random.Range(-radius, radius);
+        int y = (int)transform.position.y + Random.Range(-radius, radius);
+
+        bool path = GeneratePath(x, y);
+
+        while (!path)
+        {
+            x = (int)transform.position.x + Random.Range(-radius, radius);
+            y = (int)transform.position.y + Random.Range(-radius, radius);
+            path = GeneratePath(x, y);
+        }
     }
 }

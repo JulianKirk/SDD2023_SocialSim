@@ -7,12 +7,12 @@ public abstract class GenericSingleton<T> : MonoBehaviour where T : MonoBehaviou
 
     private static readonly Lazy<T> lazyInstance = new Lazy<T>(CreateObject);
 
-    public static T Instance = lazyInstance.Value;
+    public static T instance => lazyInstance.Value;
 
     private static T CreateObject() {
         GameObject owner = new GameObject(typeof(T).FullName);
         T instance = owner.AddComponent<T>();
-        DontDestroyOnLoad(owner);
+        // DontDestroyOnLoad(owner);
         return instance;
     }
 } // End GenericSingleton
