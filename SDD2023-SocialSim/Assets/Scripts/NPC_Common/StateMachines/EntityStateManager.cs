@@ -14,6 +14,8 @@ public abstract class EntityStateManager : MonoBehaviour
     protected List<PathNode> currentPath;
     protected int currentPathIndex;
 
+    protected float m_vision;
+
     public Vector2Int homePosition;
 
     protected virtual void Awake() 
@@ -41,7 +43,7 @@ public abstract class EntityStateManager : MonoBehaviour
 
         PathNode[,] baseGrid = new PathNode[TempWorldGen.walkableGrid.GetLength(0), TempWorldGen.walkableGrid.GetLength(1)];
 
-        for (int x = 0; x < TempWorldGen.walkableGrid.GetLength(0); x++) 
+        for (int x = 0; x < TempWorldGen.walkableGrid.GetLength(0); x++)
         {
             for (int y = 0; y < TempWorldGen.walkableGrid.GetLength(1); y++)
             {
@@ -108,8 +110,10 @@ public abstract class EntityStateManager : MonoBehaviour
 
     public virtual void Die() //Most animals will drop meat, human deaths will increase a death counter stored in the world manager
     {
-        Destroy(gameObject);
+        Debug.Log("Entity died");
     }
+
+    // Destroy(gameObject);
 
     protected abstract void OnNewYear();
 

@@ -12,6 +12,12 @@ public class TempPathFollower : MonoBehaviour
 
     public GameObject marker;
 
+    public int XStart = 0;
+    public int YStart = 0;
+
+    public int XDest = 1;
+    public int YDest = 1;
+
     private Rigidbody2D rb;
 
     // Start is called before the first frame update
@@ -25,10 +31,8 @@ public class TempPathFollower : MonoBehaviour
     {
         if (Input.GetKeyDown("space")) 
         {
-            GotoPosition(20, 21);
+            GotoPosition(XDest, YDest);
         }
-
-        FollowPath();
     }
 
     void GotoPosition(int targetX, int targetY) 
@@ -44,20 +48,23 @@ public class TempPathFollower : MonoBehaviour
         }
 
         Debug.Log("following path");
-        PathNode startingNode = baseGrid[(int)transform.position.x, (int)transform.position.y];
+        PathNode startingNode = baseGrid[XStart, YStart];
 
         currentPathIndex = 0;
         currentPath = AstarPathfinding.instance.GeneratePath(startingNode, baseGrid[targetX, targetY], baseGrid);
-        currentTarget = currentPath[0];
 
-        foreach (PathNode node in currentPath) 
-        {
-            Instantiate(marker, new Vector3(node.xPos, node.yPos, 0f), Quaternion.identity);
+        if (currentPath != null) {
+            foreach (PathNode node in currentPath) 
+            {
+                Instantiate(marker, new Vector3(node.xPos, node.yPos, 0f), Quaternion.identity);
+            }
         }
 
-        rb.velocity = new Vector2(currentTarget.xPos - transform.position.x, currentTarget.yPos - transform.position.y);
-        rb.velocity.Normalize();
-        rb.velocity = rb.velocity * speed;
+        // currentTarget = currentPath[0];
+
+        // rb.velocity = new Vector2(currentTarget.xPos - transform.position.x, currentTarget.yPos - transform.position.y);
+        // rb.velocity.Normalize();
+        // rb.velocity = rb.velocity * speed;
     }
 
     void FollowPath() 

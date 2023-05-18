@@ -25,7 +25,7 @@ public class TempWorldGen : MonoBehaviour
         {
             for (int y = 0; y < mapLength; y++) 
             {
-                bool wlkble = UnityEngine.Random.Range(1, 100) >= 25;
+                bool wlkble = UnityEngine.Random.Range(1, 100) >= 40;
                 // nodeGrid[x,y] = new PathNode(x, y, wlkble);
 
                 if (wlkble) 

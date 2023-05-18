@@ -5,17 +5,16 @@ using UnityEngine;
 public class HumanStateManager : EntityStateManager
 {    
     //Basic attributes - scale from 1 to 100
-    private float m_intelligence;
-    private float m_strength;
+    private float m_intelligence; //Affects decision making
+    private float m_strength; //Affects damage and durability
 
+    //Multiply the increase of attributes with age
     private int m_strMultiplier;
     private int m_intMultiplier;
-
-    private float m_spdMultiplier; //Speed is not from 1 to 100 but instead m/s
+    private float m_spdMultiplier; 
 
     //protected int m_age - Inherited from EntityStateManager
     //protected float m_speed - Inherited from EntityStateManager
-    private float m_vision = 10f;
 
     public LayerMask enemies;
 
@@ -30,6 +29,8 @@ public class HumanStateManager : EntityStateManager
     {
         base.Awake(); //Awake function of EntityStateManager
         
+        m_vision = 10f;
+
         m_currentState = wanderingState;
     }
 
@@ -64,6 +65,8 @@ public class HumanStateManager : EntityStateManager
 
     }
 
+    bool animalIsSensed = false;
+
     // Update is called once per frame
     void Update()
     {
@@ -73,22 +76,32 @@ public class HumanStateManager : EntityStateManager
 
         animalSense = Physics2D.OverlapCircle(transform.position, m_vision, enemies);
 
+        if (animalSense != null) 
+        {
+            animalIsSensed = true;
+        }
+
+        Debug.Log("Animal sensed: " + animalIsSensed);
+
         if (animalSense != null && m_currentState != huntingState) 
         {
+            animalSense.gameObject.GetComponent<AnimalStateManager>().BeingHunted();
             SwitchState(huntingState);
         }
     }
 
     public override void SwitchState(State<HumanStateManager> newState) 
     {
+        //Exit old state
         m_currentState.ExitState(this);
-        m_currentState = newState;
 
         //Stop all current pathfinding behaviour
         currentTarget = null;
         currentPath = null;
         currentPathIndex = 0;
 
+        //Enter new state
+        m_currentState = newState;
         m_currentState.EnterState(this);
     }
 }

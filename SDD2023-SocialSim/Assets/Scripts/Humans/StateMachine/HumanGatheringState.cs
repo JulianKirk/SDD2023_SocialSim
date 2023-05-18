@@ -6,6 +6,6 @@ public class HumanGatheringState : State<HumanStateManager>
 {
     public override void UpdateState(HumanStateManager master) 
     {
-
+        Debug.Log("Updating Gathering State");
     }
 }

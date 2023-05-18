@@ -9,6 +9,8 @@ public class AnimalStateManager : EntityStateManager
     private State<AnimalStateManager> m_currentState;
     public State<AnimalStateManager> wanderingState = new AnimalWanderingState();
 
+    public bool threatIsSensed;
+
     public void OnSpawn(float dmg, float spd) 
     {
         m_damage = dmg;
@@ -19,6 +21,8 @@ public class AnimalStateManager : EntityStateManager
     protected override void Awake()
     {
         base.Awake();
+
+        m_vision = 15f;
 
         m_currentState = wanderingState;
 
@@ -47,5 +51,10 @@ public class AnimalStateManager : EntityStateManager
     protected override void OnNewYear()
     {
         
+    }
+
+    public void BeingHunted() 
+    {
+        //Switch to a "flee" state
     }
 }

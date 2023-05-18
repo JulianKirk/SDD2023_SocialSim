@@ -13,18 +13,22 @@ public class AstarPathfinding
 
     // PathNode[,] DefaultGrid; --OLD GRID STUFF
 
-    public List<PathNode> GeneratePath(PathNode startNode, PathNode endNode, /*bool[,] walkableGrid,*/ PathNode[,] baseGrid) 
-    //Returns a list of nodes (their x-values are grid dependent). Adjusting for node width is up to the player
+    /* 
+    Returns an ordered list of grid nodes that form a path from the start to end node. 
+    
+    Node x and y coordinates are in reference to the their position within the 
+    grid - adjusting for node/cell width is up to the path following modules themselves. 
+    Will return null if it is not possible to generate a path (automatically occurs if the 
+    end node is unwalkable).
+    */
+    
+    public List<PathNode> GeneratePath(PathNode startNode, PathNode endNode, PathNode[,] baseGrid) 
     {
-        // Dictionary<(int, int), PathNode> Grid = new Dictionary<(int, int), PathNode>();
-        // Grid<PathNode> nodeGrid = new Grid<PathNode>(100, 100);
-
-        // Grid<bool> neighbourGrid = new Grid<bool>(100, 100); //Obtained from world gen
-
-        // DefaultGrid = baseGrid; --OLD GRID STUFF
 
         if (endNode.walkable == false)
         {
+            
+            Debug.Log("Astar Failed. Iterated " + "0" + " times");
             return null;
         }
 
@@ -63,7 +67,7 @@ public class AstarPathfinding
 
                 int newNeigbourGCost = currentNode.gCost + CalculateDistance(currentNode, neighbourNode);
 
-                if (neighbourNode.gCost > newNeigbourGCost /*|| !OpenList.Contains(neighbourNode)*/) 
+                if (neighbourNode.gCost > newNeigbourGCost) 
                 {
                     //If it is not in the OpenList already then it will not have had its gCost be set yet
                     neighbourNode.gCost = newNeigbourGCost;
@@ -81,7 +85,7 @@ public class AstarPathfinding
         }
 
         Debug.Log("Astar Failed. Iterated " + tempIterationCount + " times");
-        return null; //new List<PathNode>(); //Just return an empty list if it somehow fails
+        return null; //Just return null list if it somehow fails - most likely due to the end point being an obstacle
     }
 
     private List<PathNode> GenerateFinalPath(PathNode startNode, PathNode finalNode)
