@@ -61,8 +61,9 @@ public class HumanGatheringState : State<HumanStateManager>
 
                 if (resourceSense != null) 
                 {
-                    if (Mathf.Abs(resourceSense.transform.position.x - master.transform.position.x) < 1.1f 
-                        && Mathf.Abs(resourceSense.transform.position.y - master.transform.position.y) < 1.1f) //Check if the human is already at the resource
+                    Debug.Log("Target X: " + resourceSense.transform.position.x + ", Targert Y: " + resourceSense.transform.position.y);
+                    if (Mathf.Abs(resourceSense.transform.position.x - master.transform.position.x) <= 1.15f 
+                        && Mathf.Abs(resourceSense.transform.position.y - master.transform.position.y) <= 1.15f) //Check if the human is already at the resource
                     {
                         master.ClearPath(); //Stop walking
 
