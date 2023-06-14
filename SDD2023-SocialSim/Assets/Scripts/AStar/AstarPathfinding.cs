@@ -51,7 +51,7 @@ public class AstarPathfinding
 
             if(currentNode == endNode) 
             {
-                Debug.Log("Astar Succeeded. Iterated " + tempIterationCount + " times.");
+                // Debug.Log("Astar Succeeded. Iterated " + tempIterationCount + " times.");
                 return GenerateFinalPath(startNode, currentNode);
             }
 
@@ -102,9 +102,11 @@ public class AstarPathfinding
             currentNode = currentNode.parent;
         }
 
-        path.Add(startNode); //So that it can stay on the same tile if need be
+        // path.Add(startNode); //So that it can stay on the same tile if need be
 
         path.Reverse();
+
+        path.Remove(startNode);
 
         return path;
     }

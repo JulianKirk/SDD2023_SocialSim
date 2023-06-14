@@ -24,19 +24,34 @@ public class HumanStateManager : EntityStateManager
     public HumanBuildingState buildingState = new HumanBuildingState();
     public HumanHuntingState huntingState = new HumanHuntingState();
     public HumanWanderingState wanderingState = new HumanWanderingState();
+    public HumanGatheringState gatheringState = new HumanGatheringState();
+
+    public Item currentResourceTarget;
+
+    public LayerMask tempLayerMask;
 
     protected override void Awake() 
     {
         base.Awake(); //Awake function of EntityStateManager
+
+        m_speed = 2; //From EntityStateManager
+
+        m_inventory = new Inventory(100f);
+
+        currentResourceTarget = Item.Wood;
         
         m_vision = 10f;
 
-        m_currentState = wanderingState;
+        m_currentState = gatheringState;
     }
 
     void Start() 
     {
         m_currentState.EnterState(this);
+
+        m_inventory.Add(Item.Wood, 99f);
+        m_inventory.Add(Item.Grass, 1f);
+        m_inventory.Add(Item.Stone, 99f);
     }
 
     public void OnSpawn(int iq, int str, float spd, int age) //For parents it will input an average with a deviation 
@@ -81,6 +96,7 @@ public class HumanStateManager : EntityStateManager
             animalIsSensed = true;
         }
 
+        Debug.Log("Current state: " + m_currentState);
         Debug.Log("Animal sensed: " + animalIsSensed);
 
         if (animalSense != null && m_currentState != huntingState) 

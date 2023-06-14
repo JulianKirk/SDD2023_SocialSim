@@ -5,7 +5,8 @@ using UnityEngine;
 public class HumanHuntingState : State<HumanStateManager>
 {
     float huntingTimeLimit = 3f;
-    float followInterval= 1f;
+    float huntingTimeRemaining;
+    float followInterval = 1f;
     float timeSinceLastFollow;
 
     public override void EnterState(HumanStateManager master) 
@@ -13,6 +14,7 @@ public class HumanHuntingState : State<HumanStateManager>
         Debug.Log("Hunting Started.");
 
         timeSinceLastFollow = followInterval;
+        huntingTimeRemaining = huntingTimeLimit;
 
         master.GeneratePath((int)master.animalSense.transform.position.x, (int)master.animalSense.transform.position.y);
     }
@@ -23,13 +25,18 @@ public class HumanHuntingState : State<HumanStateManager>
 
         if (master.animalSense == null) 
         {
-            huntingTimeLimit -= Time.deltaTime;
-            master.SwitchState(master.wanderingState);
+            huntingTimeRemaining -= Time.deltaTime;
         } 
         else if (timeSinceLastFollow <= 0) 
         {
             master.GeneratePath((int)master.animalSense.transform.position.x, (int)master.animalSense.transform.position.y);
             timeSinceLastFollow = followInterval;
+        }
+
+        if(huntingTimeRemaining <= 0)
+        {
+            huntingTimeRemaining = huntingTimeLimit;
+            master.SwitchState(master.wanderingState);
         }
     }
 

@@ -14,14 +14,14 @@ public abstract class EntityStateManager : MonoBehaviour
     protected List<PathNode> currentPath;
     protected int currentPathIndex;
 
-    protected float m_vision;
+    public float m_vision;
 
     public Vector2Int homePosition;
 
+    public Inventory m_inventory;
+
     protected virtual void Awake() 
     {
-        m_speed = 2; //From EntityStateManager
-
         rBody = gameObject.GetComponent<Rigidbody2D>();
 
         WorldManager.instance.OnNewYear += OnNewYear;
@@ -89,10 +89,7 @@ public abstract class EntityStateManager : MonoBehaviour
                     rBody.velocity = newVel * m_speed;
                 } else 
                 {
-                    rBody.velocity = new Vector2(0f, 0f); //reset speed to zero
-                    currentTarget = null;
-                    currentPath = null;
-                    currentPathIndex = 0;
+                    ClearPath();
                 }
             }
         }
@@ -130,5 +127,13 @@ public abstract class EntityStateManager : MonoBehaviour
             y = (int)transform.position.y + Random.Range(-radius, radius);
             path = GeneratePath(x, y);
         }
+    }
+
+    public void ClearPath() 
+    {
+        rBody.velocity = new Vector2(0f, 0f); //reset speed to zero
+        currentTarget = null;
+        currentPath = null;
+        currentPathIndex = 0;
     }
 }
