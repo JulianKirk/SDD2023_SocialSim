@@ -78,10 +78,16 @@ public class HumanGatheringState : State<HumanStateManager>
                     }
 
                     //The walking towards resource check is needed because otherwise it spams the path generation (choppy movement and more lag)
-                    if (!walkingTowardsResource && !master.GeneratePath((int)resourceSense.transform.position.x, (int)resourceSense.transform.position.y))
+                    if (!walkingTowardsResource)
                     {
-                        resourceSense.enabled = false; //Disables the collider so that it is no longer a target for gatherers - unreachable
-                        walkingTowardsResource = true;
+                        if(!master.GeneratePath((int)resourceSense.transform.position.x, (int)resourceSense.transform.position.y)) 
+                        {
+                            resourceSense.enabled = false; //Disables the collider so that it is no longer a target for gatherers - unreachable
+                        } 
+                        else 
+                        {
+                            walkingTowardsResource = true; //If generatepath returns true then it is following a path
+                        }
                     }
                 } 
                 else if(timeSinceLastSearch <= 0) 
