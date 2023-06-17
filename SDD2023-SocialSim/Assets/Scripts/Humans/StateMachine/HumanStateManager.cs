@@ -26,9 +26,7 @@ public class HumanStateManager : EntityStateManager
     public HumanWanderingState wanderingState = new HumanWanderingState();
     public HumanGatheringState gatheringState = new HumanGatheringState();
 
-    public Item currentResourceTarget;
-
-    public LayerMask tempLayerMask;
+    public List<Item> currentResourceTargets = new List<Item>();
 
     protected override void Awake() 
     {
@@ -36,9 +34,10 @@ public class HumanStateManager : EntityStateManager
 
         m_speed = 2; //From EntityStateManager
 
-        m_inventory = new Inventory(100f);
+        m_inventory = new Inventory(1000f);
 
-        currentResourceTarget = Item.Wood;
+        currentResourceTargets.Add(Item.Wood);
+        currentResourceTargets.Add(Item.Stone);
         
         m_vision = 10f;
 
@@ -48,10 +47,6 @@ public class HumanStateManager : EntityStateManager
     void Start() 
     {
         m_currentState.EnterState(this);
-
-        m_inventory.Add(Item.Wood, 99f);
-        m_inventory.Add(Item.Grass, 1f);
-        m_inventory.Add(Item.Stone, 99f);
     }
 
     public void OnSpawn(int iq, int str, float spd, int age) //For parents it will input an average with a deviation 
@@ -67,7 +62,7 @@ public class HumanStateManager : EntityStateManager
         m_speed = (0.05f + age) * spd; //E.g. at 50 speed multiplier the baby starts with 1.25 speed
 
 
-        m_vision = 5f; //Babies start with bad vision
+        m_vision = 30f; //Babies start with bad vision
     }
 
     protected override void OnNewYear()
@@ -87,6 +82,9 @@ public class HumanStateManager : EntityStateManager
     {
         m_currentState.UpdateState(this);
 
+        Debug.Log("Wood: " + m_inventory.GetWeight(Item.Wood) + ", Stone: " + m_inventory.GetWeight(Item.Stone));
+        
+
         FollowPath(); //Only runs if a path is defined
 
         animalSense = Physics2D.OverlapCircle(transform.position, m_vision, enemies);
@@ -97,7 +95,7 @@ public class HumanStateManager : EntityStateManager
         }
 
         Debug.Log("Current state: " + m_currentState);
-        Debug.Log("Animal sensed: " + animalIsSensed);
+        // Debug.Log("Animal sensed: " + animalIsSensed);
 
         if (animalSense != null && m_currentState != huntingState) 
         {

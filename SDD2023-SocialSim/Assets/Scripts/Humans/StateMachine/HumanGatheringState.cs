@@ -5,7 +5,11 @@ using UnityEngine;
 public class HumanGatheringState : State<HumanStateManager>
 {
     Collider2D resourceSense;
-    LayerMask currentTargetedResource;
+
+    Collider2D  currentTargetedResourceInstance;
+    Item currentTargetedResourceType;
+
+    int currentTargetedResourceMask; //Layer masks are just bitmasks
 
     float searchInterval = 5f;
     float timeSinceLastSearch;
@@ -15,9 +19,11 @@ public class HumanGatheringState : State<HumanStateManager>
 
     bool walkingTowardsResource;
 
+    float TempTimer = 5f;
+
     Inventory resourceInventory; //Stores the inventory of the resouce that the human is taking from
 
-    enum GatheringStates //It would probably be better to use a hierarchical state machine instead
+    enum GatheringStates //It would probably be better to use a hierarchical state machine instead 
     {
         Searching,
         Gathering
@@ -27,56 +33,84 @@ public class HumanGatheringState : State<HumanStateManager>
 
     public override void EnterState(HumanStateManager master) 
     {
-        SetResourceTarget(master.currentResourceTarget);
+        SetResourceTarget(master.currentResourceTargets);
 
         timeSinceLastGather = 0f;
 
         timeSinceLastSearch = 0f; //So that it can wander straight away
         currentState = GatheringStates.Searching;        
 
-        resourceSense = Physics2D.OverlapCircle(master.transform.position, master.m_vision, master.tempLayerMask);
+        resourceSense = Physics2D.OverlapCircle(master.transform.position, master.m_vision, currentTargetedResourceMask);
 
         if (resourceSense != null) 
         {
             master.GeneratePath((int)resourceSense.transform.position.x, (int)resourceSense.transform.position.y);
+
+            currentTargetedResourceInstance = resourceSense;
         }
         else
         {
-            master.Wander(25);
+            currentTargetedResourceInstance = null;
+            master.Wander(15);
         }
     }
 
     public override void UpdateState(HumanStateManager master) 
     {        
-        resourceSense = Physics2D.OverlapCircle(master.transform.position, master.m_vision, master.tempLayerMask);
-
         switch(currentState) 
         {
             case GatheringStates.Searching: 
             {
 
-                Debug.Log("Current targeted resource is: " + (int)currentTargetedResource);
+                // Debug.Log("Current targeted resource is: " + (int)currentTargetedResourceMask);
 
                 timeSinceLastSearch -= Time.deltaTime;
 
+                if (currentTargetedResourceInstance == null) //If another NPC gets there first
+                {
+                    master.ClearPath();
+                    walkingTowardsResource = false;
+
+                    resourceSense = Physics2D.OverlapCircle(master.transform.position, master.m_vision, currentTargetedResourceMask);
+
+                    if (resourceSense != null) 
+                    {
+
+                        //The walking towards resource check is needed because otherwise it spams the path generation (choppy movement and more lag)
+                        if (!walkingTowardsResource)
+                        {
+                            if(!master.GeneratePath((int)resourceSense.transform.position.x, (int)resourceSense.transform.position.y)) 
+                            {
+                                resourceSense.enabled = false; //Disables the collider so that it is no longer a target for gatherers - unreachable
+                            } 
+                            else 
+                            {
+                                walkingTowardsResource = true; //If GeneratePath returns true then it is following a path
+                                currentTargetedResourceInstance = resourceSense;
+                            }
+                        }
+                    }
+                } 
+                else if (Mathf.Abs(currentTargetedResourceInstance.transform.position.x - master.transform.position.x) <= 1.15f 
+                    && Mathf.Abs(currentTargetedResourceInstance.transform.position.y - master.transform.position.y) <= 1.15f) //Check if the human is already at the resource
+                {
+                    master.ClearPath(); //Stop walking
+
+                    resourceInventory = currentTargetedResourceInstance.GetComponent<Resource>().m_inventory;
+
+                    currentTargetedResourceType = currentTargetedResourceInstance.GetComponent<Resource>().ResourceType;
+
+                    walkingTowardsResource = false;
+
+                    timeSinceLastSearch = 0f;
+
+                    currentState = GatheringStates.Gathering;
+
+                    break;
+                }
+
                 if (resourceSense != null) 
                 {
-                    Debug.Log("Target X: " + resourceSense.transform.position.x + ", Targert Y: " + resourceSense.transform.position.y);
-                    if (Mathf.Abs(resourceSense.transform.position.x - master.transform.position.x) <= 1.15f 
-                        && Mathf.Abs(resourceSense.transform.position.y - master.transform.position.y) <= 1.15f) //Check if the human is already at the resource
-                    {
-                        master.ClearPath(); //Stop walking
-
-                        resourceInventory = resourceSense.GetComponent<Resource>().m_inventory;
-
-                        currentState = GatheringStates.Gathering;
-
-                        walkingTowardsResource = false;
-
-                        timeSinceLastSearch = 0f;
-
-                        break;
-                    }
 
                     //The walking towards resource check is needed because otherwise it spams the path generation (choppy movement and more lag)
                     if (!walkingTowardsResource)
@@ -87,21 +121,32 @@ public class HumanGatheringState : State<HumanStateManager>
                         } 
                         else 
                         {
-                            walkingTowardsResource = true; //If generatepath returns true then it is following a path
+                            walkingTowardsResource = true; //If GeneratePath returns true then it is following a path
+                            currentTargetedResourceInstance = resourceSense;
                         }
                     }
                 } 
                 else if(timeSinceLastSearch <= 0) 
                 {
-                    master.Wander(25);
-
-                    Debug.Log("Started a new search");
+                    master.Wander(15);
 
                     timeSinceLastSearch = searchInterval;
                 }
 
-                
+                if(master.rBody.velocity.magnitude == 0) 
+                {
+                    Debug.Log("I am stationary");
+                    TempTimer -= Time.deltaTime;
 
+                    if (TempTimer < 0) 
+                    {
+                        Debug.Log("Self destructing due to inactivity");
+                        master.Die();
+                    }
+                } else 
+                {
+                    TempTimer = 5f;
+                }
                 
                 break;
             }
@@ -119,26 +164,26 @@ public class HumanGatheringState : State<HumanStateManager>
 
                 if (timeSinceLastGather <= 0) 
                 {
-                    if (resourceInventory.Remove(master.currentResourceTarget, 10)) 
+                    if (resourceInventory.Remove(currentTargetedResourceType, 10)) 
                     {
-                        master.m_inventory.Add(master.currentResourceTarget, 10);
+                        master.m_inventory.Add(currentTargetedResourceType, 10);
                     } 
                     else if (resourceSense != null) //If it fails then there is no resource left at all or a partial amount, check if it is still there
                     {
-                        float weight = resourceInventory.GetWeight(master.currentResourceTarget);
+                        float weight = resourceInventory.GetWeight(currentTargetedResourceType);
 
-                        resourceInventory.Remove(master.currentResourceTarget, weight);
-                        master.m_inventory.Add(master.currentResourceTarget, weight);
+                        resourceInventory.Remove(currentTargetedResourceType, weight);
+                        master.m_inventory.Add(currentTargetedResourceType, weight);
                     }
 
                     timeSinceLastGather = gatherInteval;
                 }
 
-                Debug.Log("Resource inventory: " + resourceInventory);
-
                 //The resource inventory might delete later in the frame. Short circuits if it does, checks weight if it doesn't.
                 if (resourceInventory == null || resourceInventory.m_currentWeight == 0f) 
                 {
+                    currentTargetedResourceInstance = null;
+
                     currentState = GatheringStates.Searching;
                     timeSinceLastGather = 0f;
                 }
@@ -151,22 +196,21 @@ public class HumanGatheringState : State<HumanStateManager>
         }
     }
 
-    void SetResourceTarget(Item resourceTarget) 
+    void SetResourceTarget(List<Item> resourceTargets) 
     {
-        switch(resourceTarget) 
+        currentTargetedResourceMask = 0;
+
+        if (resourceTargets.Contains(Item.Wood)) 
         {
-            case Item.Wood:
-                currentTargetedResource = 8;
-                break;
-            case Item.Fruit:
-                currentTargetedResource = 9;
-                break;
-            case Item.Stone:
-                currentTargetedResource = 10;
-                break;
-            default:
-               currentTargetedResource = 8;
-               break; 
+            currentTargetedResourceMask = currentTargetedResourceMask | 1 << 8;
+        }
+        if (resourceTargets.Contains(Item.Fruit)) 
+        {
+            currentTargetedResourceMask = currentTargetedResourceMask | 1 << 9;
+        }
+        if (resourceTargets.Contains(Item.Stone)) 
+        {
+            currentTargetedResourceMask = currentTargetedResourceMask | 1 << 10;
         }
     }
 

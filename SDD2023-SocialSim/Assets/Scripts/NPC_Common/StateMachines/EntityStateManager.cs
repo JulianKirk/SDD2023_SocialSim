@@ -8,7 +8,7 @@ public abstract class EntityStateManager : MonoBehaviour
     protected int m_age; //Stored in years
     protected float m_speed; //In (m/s) - Also implemented in human and animal state machines
 
-    protected Rigidbody2D rBody; // Set in start or awake
+    public Rigidbody2D rBody; // Set in start or awake
 
     public PathNode currentTarget; //Public so that state scripts can see if the entity is currently chasing something
     protected List<PathNode> currentPath;
@@ -77,7 +77,7 @@ public abstract class EntityStateManager : MonoBehaviour
     {
         if (currentTarget != null) 
         {
-            if (Mathf.Abs(currentTarget.xPos - transform.position.x) < 0.2 && Mathf.Abs(currentTarget.yPos - transform.position.y) < 0.2) 
+            if (Mathf.Abs(currentTarget.xPos - transform.position.x) < 0.25 && Mathf.Abs(currentTarget.yPos - transform.position.y) < 0.25) 
             {
                 if(currentPathIndex != currentPath.Count - 1) 
                 {
@@ -108,6 +108,7 @@ public abstract class EntityStateManager : MonoBehaviour
     public virtual void Die() //Most animals will drop meat, human deaths will increase a death counter stored in the world manager
     {
         Debug.Log("Entity died");
+        Destroy(gameObject);
     }
 
     // Destroy(gameObject);

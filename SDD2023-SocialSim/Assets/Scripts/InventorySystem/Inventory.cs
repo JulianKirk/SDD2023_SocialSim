@@ -66,7 +66,7 @@ public class Inventory
 
     public bool Remove(Item item, float weight) 
     {
-        if (m_items[item] < weight) 
+        if (m_items[item] < weight || !m_items.ContainsKey(item)) // If it doesn't have that resource then nothing happens
         {
             return false;
         }
@@ -79,6 +79,12 @@ public class Inventory
 
     public float GetWeight(Item item) 
     {
-        return m_items[item];
+        if (m_items.ContainsKey(item)) {
+            return m_items[item];
+        } 
+        else 
+        {
+            return 0f;
+        }
     }
 }

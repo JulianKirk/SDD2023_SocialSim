@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Resource : MonoBehaviour
 {
+    public Item ResourceType;
+
     public Inventory m_inventory;
 
     void Update()
@@ -14,7 +16,7 @@ public class Resource : MonoBehaviour
         }
     }
 
-    void Die() 
+    protected void Die() 
     {
         //Maybe play a dying animation and sound
         Destroy(gameObject);
