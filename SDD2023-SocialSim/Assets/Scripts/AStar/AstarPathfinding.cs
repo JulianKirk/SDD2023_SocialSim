@@ -9,10 +9,6 @@ public class AstarPathfinding
 
     public static AstarPathfinding instance { get { return _instance.Value; } }
 
-    // private AstarPathfinding(){}
-
-    // PathNode[,] DefaultGrid; --OLD GRID STUFF
-
     /* 
     Returns an ordered list of grid nodes that form a path from the start to end node. 
     

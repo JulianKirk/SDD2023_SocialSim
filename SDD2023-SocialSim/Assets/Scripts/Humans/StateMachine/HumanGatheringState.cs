@@ -17,9 +17,7 @@ public class HumanGatheringState : State<HumanStateManager>
     float gatherInteval = 1f;
     float timeSinceLastGather;
 
-    bool walkingTowardsResource;
-
-    float TempTimer = 5f;
+    // float TempTimer = 25f;
 
     Inventory resourceInventory; //Stores the inventory of the resouce that the human is taking from
 
@@ -50,7 +48,7 @@ public class HumanGatheringState : State<HumanStateManager>
         }
         else
         {
-            currentTargetedResourceInstance = null;
+            // currentTargetedResourceInstance = null;
             master.Wander(15);
         }
     }
@@ -68,27 +66,29 @@ public class HumanGatheringState : State<HumanStateManager>
 
                 if (currentTargetedResourceInstance == null) //If another NPC gets there first
                 {
-                    master.ClearPath();
-                    walkingTowardsResource = false;
+                    // master.ClearPath();
 
                     resourceSense = Physics2D.OverlapCircle(master.transform.position, master.m_vision, currentTargetedResourceMask);
 
                     if (resourceSense != null) 
                     {
-
-                        //The walking towards resource check is needed because otherwise it spams the path generation (choppy movement and more lag)
-                        if (!walkingTowardsResource)
+                        if(!master.GeneratePath((int)resourceSense.transform.position.x, (int)resourceSense.transform.position.y)) 
                         {
-                            if(!master.GeneratePath((int)resourceSense.transform.position.x, (int)resourceSense.transform.position.y)) 
-                            {
-                                resourceSense.enabled = false; //Disables the collider so that it is no longer a target for gatherers - unreachable
-                            } 
-                            else 
-                            {
-                                walkingTowardsResource = true; //If GeneratePath returns true then it is following a path
-                                currentTargetedResourceInstance = resourceSense;
-                            }
+                            resourceSense.enabled = false; //Disables the collider so that it is no longer a target for gatherers - unreachable
+                            
+                            // master.Wander(15);
+                            // timeSinceLastSearch = searchInterval;
+                        } 
+                        else 
+                        {
+                            currentTargetedResourceInstance = resourceSense;
                         }
+                    }
+                    else if(timeSinceLastSearch <= 0) 
+                    {
+                        master.Wander(15);
+
+                        timeSinceLastSearch = searchInterval;
                     }
                 } 
                 else if (Mathf.Abs(currentTargetedResourceInstance.transform.position.x - master.transform.position.x) <= 1.15f 
@@ -100,8 +100,6 @@ public class HumanGatheringState : State<HumanStateManager>
 
                     currentTargetedResourceType = currentTargetedResourceInstance.GetComponent<Resource>().ResourceType;
 
-                    walkingTowardsResource = false;
-
                     timeSinceLastSearch = 0f;
 
                     currentState = GatheringStates.Gathering;
@@ -109,44 +107,19 @@ public class HumanGatheringState : State<HumanStateManager>
                     break;
                 }
 
-                if (resourceSense != null) 
-                {
+                // if(master.rBody.velocity.magnitude == 0) 
+                // {
+                //     TempTimer -= Time.deltaTime;
 
-                    //The walking towards resource check is needed because otherwise it spams the path generation (choppy movement and more lag)
-                    if (!walkingTowardsResource)
-                    {
-                        if(!master.GeneratePath((int)resourceSense.transform.position.x, (int)resourceSense.transform.position.y)) 
-                        {
-                            resourceSense.enabled = false; //Disables the collider so that it is no longer a target for gatherers - unreachable
-                        } 
-                        else 
-                        {
-                            walkingTowardsResource = true; //If GeneratePath returns true then it is following a path
-                            currentTargetedResourceInstance = resourceSense;
-                        }
-                    }
-                } 
-                else if(timeSinceLastSearch <= 0) 
-                {
-                    master.Wander(15);
-
-                    timeSinceLastSearch = searchInterval;
-                }
-
-                if(master.rBody.velocity.magnitude == 0) 
-                {
-                    Debug.Log("I am stationary");
-                    TempTimer -= Time.deltaTime;
-
-                    if (TempTimer < 0) 
-                    {
-                        Debug.Log("Self destructing due to inactivity");
-                        master.Die();
-                    }
-                } else 
-                {
-                    TempTimer = 5f;
-                }
+                //     if (TempTimer <= 0) 
+                //     {
+                //         master.Die();
+                //         Debug.Log("Death due to inactivity");
+                //     }
+                // } else 
+                // {
+                //     TempTimer = 25f;
+                // }
                 
                 break;
             }
@@ -182,7 +155,7 @@ public class HumanGatheringState : State<HumanStateManager>
                 //The resource inventory might delete later in the frame. Short circuits if it does, checks weight if it doesn't.
                 if (resourceInventory == null || resourceInventory.m_currentWeight == 0f) 
                 {
-                    currentTargetedResourceInstance = null;
+                    // currentTargetedResourceInstance = null;
 
                     currentState = GatheringStates.Searching;
                     timeSinceLastGather = 0f;

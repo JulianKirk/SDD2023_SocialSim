@@ -41,7 +41,7 @@ public class HumanStateManager : EntityStateManager
         
         m_vision = 10f;
 
-        m_currentState = gatheringState;
+        m_currentState = wanderingState;
     }
 
     void Start() 

@@ -31,7 +31,6 @@ public class HumanWanderingState : State<HumanStateManager> //Both humans and an
             wanderTimer = wanderDuration;
         }
 
-
     }
 
     public override void ExitState(HumanStateManager master)
