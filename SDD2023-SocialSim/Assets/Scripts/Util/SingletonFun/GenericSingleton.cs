@@ -15,4 +15,4 @@ public abstract class GenericSingleton<T> : MonoBehaviour where T : MonoBehaviou
         // DontDestroyOnLoad(owner);
         return instance;
     }
-} // End GenericSingleton
+}

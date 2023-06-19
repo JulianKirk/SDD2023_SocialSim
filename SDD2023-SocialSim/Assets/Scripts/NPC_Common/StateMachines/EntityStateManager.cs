@@ -24,9 +24,14 @@ public abstract class EntityStateManager : MonoBehaviour
     {
         rBody = gameObject.GetComponent<Rigidbody2D>();
 
-        WorldManager.instance.OnNewYear += OnNewYear;
+        // WorldManager.instance.OnNewYear += OnNewYear;
 
         homePosition = new Vector2Int((int)transform.position.x, (int)transform.position.y); //Set the initial home position to be where the entity first spawns
+    }
+
+    protected virtual void Start()
+    {
+        WorldManager.instance.OnNewYear += OnNewYear;
     }
     
     public virtual void SwitchState(State<AnimalStateManager> newState) {}

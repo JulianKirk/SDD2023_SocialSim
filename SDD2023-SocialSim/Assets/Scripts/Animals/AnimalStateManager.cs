@@ -29,6 +29,10 @@ public class AnimalStateManager : EntityStateManager
         m_currentState.EnterState(this);
     }
 
+    protected override void Start() {
+        base.Start();
+    }
+
     // Update is called once per frame
     void Update()
     {

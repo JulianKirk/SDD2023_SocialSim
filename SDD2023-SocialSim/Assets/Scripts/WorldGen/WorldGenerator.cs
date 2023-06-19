@@ -39,6 +39,8 @@ public class WorldGenerator : MonoBehaviour
         {TileType.Water, new TileType[] {TileType.Mountains, TileType.Plains, TileType.Forest, TileType.Water, TileType.Desert}},
     };
 
+    // Dictionary<TileType, TileType[]> tileNeighbours = new Dictionary<TileType, TileType[]>();
+
     Dictionary<(int, int), HashSet<TileType>> tileSuperPositions;
 
     public AstarTile[] tileRefs; //Assign in editor - have indexes match with TileType
@@ -48,6 +50,12 @@ public class WorldGenerator : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        tileNeighbours.Add(TileType.Forest, tiles);
+        tileNeighbours.Add(TileType.Desert, tiles);
+        tileNeighbours.Add(TileType.Mountains, tiles);
+        tileNeighbours.Add(TileType.Plains, tiles);
+        tileNeighbours.Add(TileType.Water, tiles);
+
         GenerateMap(100, 100, 11.33f, Random.Range(0, 10000000), Random.Range(0, 10000000), 0.1f);
     }
 

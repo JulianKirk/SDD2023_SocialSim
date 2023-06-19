@@ -41,11 +41,13 @@ public class HumanStateManager : EntityStateManager
         
         m_vision = 10f;
 
-        m_currentState = wanderingState;
+        m_currentState = gatheringState;
     }
 
-    void Start() 
+    protected override void Start() 
     {
+        base.Start();
+
         m_currentState.EnterState(this);
     }
 
@@ -75,8 +77,6 @@ public class HumanStateManager : EntityStateManager
 
     }
 
-    bool animalIsSensed = false;
-
     // Update is called once per frame
     void Update()
     {
@@ -89,13 +89,7 @@ public class HumanStateManager : EntityStateManager
 
         animalSense = Physics2D.OverlapCircle(transform.position, m_vision, enemies);
 
-        if (animalSense != null) 
-        {
-            animalIsSensed = true;
-        }
-
         Debug.Log("Current state: " + m_currentState);
-        // Debug.Log("Animal sensed: " + animalIsSensed);
 
         if (animalSense != null && m_currentState != huntingState) 
         {
