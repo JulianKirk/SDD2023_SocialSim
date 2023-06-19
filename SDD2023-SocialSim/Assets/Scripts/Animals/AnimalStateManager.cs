@@ -57,6 +57,11 @@ public class AnimalStateManager : EntityStateManager
         
     }
 
+    protected override void OnNewMonth()
+    {
+        
+    }
+
     public void BeingHunted() 
     {
         //Switch to a "flee" state

@@ -77,6 +77,14 @@ public class HumanStateManager : EntityStateManager
 
     }
 
+    protected override void OnNewMonth()
+    {
+        if ((m_inventory.GetWeight(Item.Fruit) + m_inventory.GetWeight(Item.Meat)) < 1f) //They starve if they don't have enough food
+        {
+            Die();
+        }
+    }
+
     // Update is called once per frame
     void Update()
     {

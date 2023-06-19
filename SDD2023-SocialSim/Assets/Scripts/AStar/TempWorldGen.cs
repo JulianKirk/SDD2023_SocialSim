@@ -16,7 +16,7 @@ public class TempWorldGen : MonoBehaviour
     public static bool[,] walkableGrid; //Can maybe move this within awake later - this was here because before it was public // JK it will have to be universal somehow
     // public static PathNode[,] nodeGrid;
 
-    void Awake() 
+    void Start() 
     {
         // walkableGrid = new bool[mapWidth, mapLength];
 

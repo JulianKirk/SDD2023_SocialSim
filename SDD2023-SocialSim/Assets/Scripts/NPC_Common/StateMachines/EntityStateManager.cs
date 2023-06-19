@@ -32,6 +32,7 @@ public abstract class EntityStateManager : MonoBehaviour
     protected virtual void Start()
     {
         WorldManager.instance.OnNewYear += OnNewYear;
+        WorldManager.instance.OnNewMonth += OnNewMonth;
     }
     
     public virtual void SwitchState(State<AnimalStateManager> newState) {}
@@ -39,20 +40,20 @@ public abstract class EntityStateManager : MonoBehaviour
 
     public bool GeneratePath(int targetX, int targetY) //Needs to be called by state classes, bool indicates if it failed or not
     {
-        if (targetX < 0 || targetX >= TempWorldGen.walkableGrid.GetLength(0) || targetY < 0 || targetY >= TempWorldGen.walkableGrid.GetLength(1)) 
+        if (targetX < 0 || targetX >= MapGenerator.walkableGrid.GetLength(0) || targetY < 0 || targetY >= MapGenerator.walkableGrid.GetLength(1)) 
         {
             return false;
         }
 
         rBody.velocity = new Vector2(0f, 0f);
 
-        PathNode[,] baseGrid = new PathNode[TempWorldGen.walkableGrid.GetLength(0), TempWorldGen.walkableGrid.GetLength(1)];
+        PathNode[,] baseGrid = new PathNode[MapGenerator.walkableGrid.GetLength(0), MapGenerator.walkableGrid.GetLength(1)];
 
-        for (int x = 0; x < TempWorldGen.walkableGrid.GetLength(0); x++)
+        for (int x = 0; x < MapGenerator.walkableGrid.GetLength(0); x++)
         {
-            for (int y = 0; y < TempWorldGen.walkableGrid.GetLength(1); y++)
+            for (int y = 0; y < MapGenerator.walkableGrid.GetLength(1); y++)
             {
-                baseGrid[x, y] = new PathNode(x, y, TempWorldGen.walkableGrid[x, y]);
+                baseGrid[x, y] = new PathNode(x, y, MapGenerator.walkableGrid[x, y]);
             }
         }
 
@@ -68,14 +69,16 @@ public abstract class EntityStateManager : MonoBehaviour
             Debug.Log("Destination is unreachable");
             return false;
         }
+        else 
+        {
+            currentTarget = currentPath[0];
 
-        currentTarget = currentPath[0];
+            rBody.velocity = new Vector2(currentTarget.xPos - transform.position.x, currentTarget.yPos - transform.position.y);
+            rBody.velocity.Normalize();
+            rBody.velocity = rBody.velocity * m_speed;
 
-        rBody.velocity = new Vector2(currentTarget.xPos - transform.position.x, currentTarget.yPos - transform.position.y);
-        rBody.velocity.Normalize();
-        rBody.velocity = rBody.velocity * m_speed;
-
-        return true;
+            return true;
+        }
     }
 
     protected void FollowPath() 
@@ -119,6 +122,8 @@ public abstract class EntityStateManager : MonoBehaviour
     // Destroy(gameObject);
 
     protected abstract void OnNewYear();
+
+    protected abstract void OnNewMonth();
 
     public void Wander(int radius) 
     {
