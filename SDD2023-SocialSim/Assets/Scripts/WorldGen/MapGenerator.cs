@@ -34,11 +34,9 @@ public class MapGenerator : MonoBehaviour
     int m_mapLength;
     int m_mapWidth;
 
-    bool[,] GenerateMap(int mapWidth, int mapLength, int heightSeed, int heatSeed, float frequency, float horizontalDilation, float verticalDilation) 
+    void GenerateMap(int mapWidth, int mapLength, int heightSeed, int heatSeed, float frequency, float horizontalDilation, float verticalDilation) 
     {
         walkableGrid = new bool[mapWidth, mapLength];
-
-        bool[,] obstacleMap = new bool[mapWidth, mapLength];
 
         float[,] heatMap = new float[mapWidth, mapLength];
         float[,] heightMap = new float[mapWidth, mapLength];
@@ -137,8 +135,6 @@ public class MapGenerator : MonoBehaviour
         }
 
         GenerateNewResources();
-
-        return obstacleMap;
     }
 
     void GenerateNewResources() 
@@ -150,13 +146,13 @@ public class MapGenerator : MonoBehaviour
                 switch(mapResourceClasses[x, y])
                 {
                     case TileResourceClass.Stone: 
-                        if (Random.Range(0, 100) < 10)
+                        if (Random.Range(0, 100) < 5)
                         {
                             Instantiate(stoneResources[Random.Range(0, stoneResources.Length)], new Vector3(x, y, 0), Quaternion.identity);
                         }
                         break;
                     case TileResourceClass.Wood: 
-                        if (Random.Range(0, 100) < 10)
+                        if (Random.Range(0, 100) < 13)
                         {
                             Instantiate(woodResources[Random.Range(0, woodResources.Length)], new Vector3(x, y, 0), Quaternion.identity);
                         }

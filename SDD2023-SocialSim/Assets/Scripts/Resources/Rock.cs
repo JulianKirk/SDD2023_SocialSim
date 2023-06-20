@@ -10,6 +10,6 @@ public class Rock : Resource
         ResourceType = Item.Stone;
 
         m_inventory = new Inventory(50f);
-        m_inventory.Add(Item.Stone, 50f);
+        m_inventory.Add(Item.Stone, 8f);
     }
 }

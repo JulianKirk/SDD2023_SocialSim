@@ -66,7 +66,7 @@ public class Inventory
 
     public bool Remove(Item item, float weight) 
     {
-        if (m_items[item] < weight || !m_items.ContainsKey(item)) // If it doesn't have that resource then nothing happens
+        if (!m_items.ContainsKey(item) || m_items[item] < weight) // If it doesn't have that resource then nothing happens
         {
             return false;
         }
@@ -75,6 +75,67 @@ public class Inventory
         m_currentWeight -= weight;
         
         return true;
+    }
+
+    public float RemoveAll(Item item)
+    {   
+        if(!m_items.ContainsKey(item)) 
+        {
+            return 0f;
+        }
+
+        float itemWeight = m_items[item];
+
+        Remove(item, itemWeight);
+
+        return itemWeight;
+    }
+
+    public float RemoveFood(float weight) 
+    {
+        float weightRemaining = weight;
+
+        if (!Remove(Item.Fruit, weightRemaining))
+        {
+            weightRemaining -= RemoveAll(Item.Fruit);
+
+            Remove(Item.Meat, weightRemaining);
+        }
+
+        float meatRatio = weightRemaining/weight;
+
+        return meatRatio;
+    }
+
+    public void AddFood(float weight, float meatRatio) 
+    {
+        Add(Item.Fruit, weight * meatRatio);
+
+        Add(Item.Meat, weight * (1 - meatRatio));
+    }
+
+    public float GetFoodWeight() 
+    {
+        float weight = 0f;
+
+        if (m_items.ContainsKey(Item.Meat)) 
+        {
+            weight += m_items[Item.Meat];
+        }
+
+        if (m_items.ContainsKey(Item.Fruit)) 
+        {
+            weight += m_items[Item.Fruit];
+        }
+
+        return weight;
+    }
+
+    public void DumpMaterial(float woodWeight, float stoneWeight) //Assuming it is being dumped into an endless container
+    {
+        //Mainly here to avoid having to call GetComponent from the human state classes
+        Add(Item.Wood, woodWeight);
+        Add(Item.Stone, stoneWeight);
     }
 
     public float GetWeight(Item item) 

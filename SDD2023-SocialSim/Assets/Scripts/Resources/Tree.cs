@@ -11,6 +11,6 @@ public class Tree : Resource
         ResourceType = Item.Wood;
 
         m_inventory = new Inventory(50f);
-        m_inventory.Add(Item.Wood, 50f);
+        m_inventory.Add(Item.Wood, 16f);
     }
 }

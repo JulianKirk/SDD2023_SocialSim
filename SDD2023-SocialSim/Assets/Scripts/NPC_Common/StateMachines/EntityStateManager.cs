@@ -31,8 +31,8 @@ public abstract class EntityStateManager : MonoBehaviour
 
     protected virtual void Start()
     {
-        WorldManager.instance.OnNewYear += OnNewYear;
-        WorldManager.instance.OnNewMonth += OnNewMonth;
+        WorldManager.OnNewYear += OnNewYear;
+        WorldManager.OnNewMonth += OnNewMonth;
     }
     
     public virtual void SwitchState(State<AnimalStateManager> newState) {}
@@ -85,7 +85,8 @@ public abstract class EntityStateManager : MonoBehaviour
     {
         if (currentTarget != null) 
         {
-            if (Mathf.Abs(currentTarget.xPos - transform.position.x) < 0.25 && Mathf.Abs(currentTarget.yPos - transform.position.y) < 0.25) 
+            if (Mathf.Abs(currentTarget.xPos - transform.position.x) < 0.25 && Mathf.Abs(currentTarget.yPos - transform.position.y) < 0.25)
+            // if (((new Vector2(currentTarget.xPos, currentTarget.yPos)) - (Vector2)transform.position).magnitude < 0.25)
             {
                 if(currentPathIndex != currentPath.Count - 1) 
                 {
@@ -116,6 +117,10 @@ public abstract class EntityStateManager : MonoBehaviour
     public virtual void Die() //Most animals will drop meat, human deaths will increase a death counter stored in the world manager
     {
         Debug.Log("Entity died");
+
+        WorldManager.OnNewYear -= OnNewYear;
+        WorldManager.OnNewMonth -= OnNewMonth;
+
         Destroy(gameObject);
     }
 

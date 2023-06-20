@@ -106,20 +106,6 @@ public class HumanGatheringState : State<HumanStateManager>
 
                     break;
                 }
-
-                // if(master.rBody.velocity.magnitude == 0) 
-                // {
-                //     TempTimer -= Time.deltaTime;
-
-                //     if (TempTimer <= 0) 
-                //     {
-                //         master.Die();
-                //         Debug.Log("Death due to inactivity");
-                //     }
-                // } else 
-                // {
-                //     TempTimer = 25f;
-                // }
                 
                 break;
             }
@@ -137,9 +123,9 @@ public class HumanGatheringState : State<HumanStateManager>
 
                 if (timeSinceLastGather <= 0) 
                 {
-                    if (resourceInventory.Remove(currentTargetedResourceType, 10)) 
+                    if (resourceInventory.Remove(currentTargetedResourceType, 2)) 
                     {
-                        master.m_inventory.Add(currentTargetedResourceType, 10);
+                        master.m_inventory.Add(currentTargetedResourceType, 2);
                     } 
                     else if (resourceSense != null) //If it fails then there is no resource left at all or a partial amount, check if it is still there
                     {
@@ -156,6 +142,11 @@ public class HumanGatheringState : State<HumanStateManager>
                 if (resourceInventory == null || resourceInventory.m_currentWeight == 0f) 
                 {
                     // currentTargetedResourceInstance = null;
+
+                    if (master.m_inventory.m_currentWeight >= (master.m_inventory.m_maxWeight - 1f))
+                    {
+                        master.SwitchState(master.recallState);
+                    }
 
                     currentState = GatheringStates.Searching;
                     timeSinceLastGather = 0f;
