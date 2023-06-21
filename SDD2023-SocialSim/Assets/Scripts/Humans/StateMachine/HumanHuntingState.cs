@@ -36,7 +36,7 @@ public class HumanHuntingState : State<HumanStateManager>
         if(huntingTimeRemaining <= 0)
         {
             huntingTimeRemaining = huntingTimeLimit;
-            master.SwitchState(master.wanderingState);
+            master.SwitchState(master.decisiveState);
         }
     }
 

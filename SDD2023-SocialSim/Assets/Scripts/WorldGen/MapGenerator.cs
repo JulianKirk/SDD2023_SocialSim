@@ -38,6 +38,8 @@ public class MapGenerator : MonoBehaviour
     {
         walkableGrid = new bool[mapWidth, mapLength];
 
+        WorldManager.landOwned = new bool[mapWidth, mapLength];
+
         float[,] heatMap = new float[mapWidth, mapLength];
         float[,] heightMap = new float[mapWidth, mapLength];
 

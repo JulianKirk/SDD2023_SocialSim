@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class HumanBuildHouseState : State<HumanStateManager> //Both humans and animal wandering states can inherit from this
+public class HumanBuildHouseState : State<HumanStateManager>
 {
     float totalBuildTime;
     float remainingBuildTime;
@@ -17,8 +17,6 @@ public class HumanBuildHouseState : State<HumanStateManager> //Both humans and a
     public override void UpdateState(HumanStateManager master) 
     {
         remainingBuildTime -= Time.deltaTime;
-
-        Debug.Log("Remaining Build Time: " + remainingBuildTime);
 
         //Play some sort of building animation
 

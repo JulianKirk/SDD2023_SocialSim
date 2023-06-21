@@ -143,6 +143,11 @@ public class HumanGatheringState : State<HumanStateManager>
                 {
                     // currentTargetedResourceInstance = null;
 
+                    if(master.m_inventory.GetFoodWeight() > master.m_inventory.m_maxWeight * 0.5) 
+                    {
+                        master.isStarving = false;
+                    }
+
                     if (master.m_inventory.m_currentWeight >= (master.m_inventory.m_maxWeight - 1f))
                     {
                         master.SwitchState(master.recallState);

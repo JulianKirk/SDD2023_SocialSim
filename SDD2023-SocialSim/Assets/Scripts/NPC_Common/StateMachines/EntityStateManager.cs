@@ -59,12 +59,15 @@ public abstract class EntityStateManager : MonoBehaviour
 
         // PathNode[,] baseGrid = (PathNode[,])TempWorldGen.nodeGrid.Clone(); -- FOR SOME REASON THIS IS RIDICULOUSLY PERFORMANCE INTENSIVE SO IT JUST CRASHES
 
-        PathNode startingNode = baseGrid[(int)transform.position.x, (int)transform.position.y];
+        int xTarget = Mathf.Clamp((int)transform.position.x, 0, MapGenerator.walkableGrid.GetLength(0) - 1);
+        int yTarget = Mathf.Clamp((int)transform.position.y, 0, MapGenerator.walkableGrid.GetLength(1) - 1);
+
+        PathNode startingNode = baseGrid[xTarget, yTarget];
 
         currentPathIndex = 0;
         currentPath = AstarPathfinding.instance.GeneratePath(startingNode, baseGrid[targetX, targetY], baseGrid);
         
-        if (currentPath == null) 
+        if (currentPath == null || currentPath.Count < 1) 
         {
             Debug.Log("Destination is unreachable");
             return false;
@@ -83,7 +86,7 @@ public abstract class EntityStateManager : MonoBehaviour
 
     protected void FollowPath() 
     {
-        if (currentTarget != null) 
+        if (currentTarget != null && currentPath.Count != 0) 
         {
             if (Mathf.Abs(currentTarget.xPos - transform.position.x) < 0.25 && Mathf.Abs(currentTarget.yPos - transform.position.y) < 0.25)
             // if (((new Vector2(currentTarget.xPos, currentTarget.yPos)) - (Vector2)transform.position).magnitude < 0.25)

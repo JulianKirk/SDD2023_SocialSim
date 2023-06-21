@@ -2,6 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum Sex
+{
+    male,
+    female
+}
+
 public class HumanStateManager : EntityStateManager
 {    
     //Basic attributes - scale from 1 to 100
@@ -11,7 +17,32 @@ public class HumanStateManager : EntityStateManager
     //Multiply the increase of attributes with age
     private int m_strMultiplier;
     private int m_intMultiplier;
-    private float m_spdMultiplier; 
+
+    public Sex m_sex;
+    public bool seekingPartner;
+    public bool hasPartner;
+    private HumanStateManager m_partner; 
+
+    public int NumberOfChildren;
+
+    //public HumanStateManager babyTemplate; //Assigned in editor
+
+    public HumanStateManager Partner 
+    {
+        get { 
+                if (m_partner == null) 
+                {
+                    hasPartner = false;
+                }
+                return m_partner; 
+            }
+        set {
+            if (value is HumanStateManager){
+                m_partner = value;
+                hasPartner = true;
+            }
+        }
+    }
 
     //protected int m_age - Inherited from EntityStateManager
     //protected float m_speed - Inherited from EntityStateManager
@@ -21,8 +52,9 @@ public class HumanStateManager : EntityStateManager
     public bool homeOwner;
     public GameObject houseObject;
     public Inventory houseInventory;
+    //public Vector2 homePosition - inherited from EntityStateManager
 
-    bool isStarving;
+    public bool isStarving;
 
     public LayerMask enemies;
 
@@ -35,6 +67,9 @@ public class HumanStateManager : EntityStateManager
     public HumanWanderingState wanderingState = new HumanWanderingState();
     public HumanGatheringState gatheringState = new HumanGatheringState();
     public HumanRecallState recallState = new HumanRecallState();
+    public HumanBreedingState breedingState = new HumanBreedingState();
+    public HumanSeekPartnerState seekPartnerState = new HumanSeekPartnerState();
+    public HumanDecisiveState decisiveState = new HumanDecisiveState();
 
     public List<Item> currentResourceTargets = new List<Item>();
 
@@ -44,7 +79,7 @@ public class HumanStateManager : EntityStateManager
 
         m_speed = 2; //From EntityStateManager
 
-        m_inventory = new Inventory(100f);
+        m_inventory = new Inventory(120f);
 
         currentResourceTargets.Add(Item.Wood);
         currentResourceTargets.Add(Item.Stone);
@@ -54,35 +89,45 @@ public class HumanStateManager : EntityStateManager
         m_age = 0;
 
         m_currentState = gatheringState;
+
+        m_sex = Random.Range(0, 2) == 1 ? Sex.male : Sex.female;
     }
 
     protected override void Start() 
     {
         base.Start();
 
-        m_inventory.Add(Item.Fruit, 25f);
-        m_inventory.Add(Item.Meat, 25f);
+        m_inventory.Add(Item.Fruit, 300f);
+        m_inventory.Add(Item.Meat, 300f);
 
         m_currentState.EnterState(this);
     }
 
-    public void OnSpawn(Vector2Int homePos, int iq, int str, float spd, int age) //For parents it will input an average with a deviation 
+    public void OnSpawn(Vector2Int homePos, GameObject homeObject, int iq, int str, int age) // For parents it will input an average with a deviation 
     {
         m_intMultiplier = iq;
         m_strMultiplier = str;
-        m_spdMultiplier = spd;
 
         m_age = age;
 
+        m_sex = Random.Range(0, 2) == 0 ? Sex.male : Sex.female;
+
+        Debug.Log("Sex: " + m_sex);
+
         m_intelligence = -m_age * (m_age - 100f) * (0.03f);
         m_strength = -m_age * (m_age - 100f) * (0.03f);
-        m_speed = Mathf.Log10(m_age) + 1; //E.g. at 50 speed multiplier the baby starts with 1.25 speed
+        m_speed = /*-m_age * (m_age - 100f) * (0.001f);*/ Mathf.Log10(m_age + 1) + 1;
 
 
-        m_vision = (9 * Mathf.Log10(m_age)) + 1; //Babies start with really bad vision
+        m_vision = (9 * Mathf.Log10(m_age + 1)) + 1; // Babies start with really bad vision
 
         homePosition = homePos;
+        houseObject = homeObject;
+
         homeOwner = false;
+        hasPartner = false;
+        
+        NumberOfChildren = 0;
     }
 
     protected override void OnNewYear()
@@ -91,23 +136,50 @@ public class HumanStateManager : EntityStateManager
 
         m_intelligence += (float)m_intMultiplier / (5 * m_age);
         m_strength += (float)m_strMultiplier / (5 * m_age);
-        m_speed += (float)m_spdMultiplier / (10 * m_age);
+         m_speed = /*-m_age * (m_age - 100f) * (0.001f);*/ Mathf.Log10(m_age + 1) + 1;
 
         m_vision += 3.5f / m_age; //Hyperbolic relationship
 
+        if (m_age == 15) 
+        {
+            WorldManager.HousePositions.Remove(homePosition);
+
+            if (!WorldManager.HousePositions.Contains(homePosition)) 
+            {
+                Destroy(houseObject);
+            }
+
+            homeOwner = false;
+            //houseObject = null; - Can't do this because Unity overrides it in a weird way
+
+            //Set a new home position
+            int newXPos = Mathf.Clamp(homePosition.x + Random.Range(-20, 20), 0, MapGenerator.walkableGrid.GetLength(0));
+            int newYPos = Mathf.Clamp(homePosition.y + Random.Range(-20, 20), 0, MapGenerator.walkableGrid.GetLength(1));
+
+            homePosition = new Vector2Int(newXPos, newXPos);
+
+            while (WorldManager.HousePositions.Contains(homePosition)) //Make sure there isn't a home there already
+            {
+                newXPos = Mathf.Clamp(homePosition.x + Random.Range(-20, 20), 0, MapGenerator.walkableGrid.GetLength(0));
+                newYPos = Mathf.Clamp(homePosition.y + Random.Range(-20, 20), 0, MapGenerator.walkableGrid.GetLength(1));
+
+                homePosition = new Vector2Int(newXPos, newXPos);
+            }
+        }
     }
 
     protected override void OnNewMonth()
     {
-        if ((m_inventory.GetWeight(Item.Fruit) + m_inventory.GetWeight(Item.Meat)) < (-m_age * (m_age - 100f) * (0.01f))) //They starve if they don't have enough food
+        if ((m_inventory.GetFoodWeight()) < (-m_age * (m_age - 100f) * (0.006f))) //They starve if they don't have enough food
         {
+            Debug.Log("I starved during the " + m_currentState + " state.");
             Die();
         } 
         else 
         {
-            m_inventory.RemoveFood((-m_age * (m_age - 100f) * (0.01f)));
+            m_inventory.RemoveFood((-m_age * (m_age - 100f) * (0.006f)));
 
-            if (m_inventory.GetFoodWeight() < 25f) 
+            if (m_inventory.GetFoodWeight() < 25f) //1 and 2 thirds months worth of food (for a human in their prime) 
             {
                 isStarving = true;
 
@@ -119,11 +191,19 @@ public class HumanStateManager : EntityStateManager
                 SwitchState(gatheringState);
             } else 
             {
+                currentResourceTargets.Clear();
+
+                currentResourceTargets.Add(Item.Stone);
+                currentResourceTargets.Add(Item.Wood);
+
                 isStarving = false;
             }
         }
 
-        if (!isStarving && m_currentState != recallState && m_currentState != buildHouseState) 
+        if (!isStarving 
+            && m_currentState != recallState 
+            && m_currentState != buildHouseState 
+            && m_currentState != breedingState) 
         {
             SwitchState(recallState);
         }
@@ -143,7 +223,6 @@ public class HumanStateManager : EntityStateManager
         //     animalSense.gameObject.GetComponent<AnimalStateManager>().BeingHunted();
         //     SwitchState(huntingState);
         // }
-
     }
 
     void LateUpdate() 
@@ -164,8 +243,41 @@ public class HumanStateManager : EntityStateManager
         m_currentState.EnterState(this);
     }
 
+    public override void Die() 
+    {
+        if (hasPartner) 
+        {
+            m_partner.hasPartner = false; //Widow the human's partner so they can match with
+        }
+        else
+        {
+            Destroy(houseObject);
+            WorldManager.HousePositions.Remove(homePosition);
+            WorldManager.HumanCollective.Remove(this);
+        }
+
+        WorldManager.yearlyDeathCount += 1;
+
+        base.Die();
+    }
+
     public void SpawnHouse() //Because instantiate only work in monobehaviours
     {
         houseObject = Instantiate(housePrefab, new Vector3((int)transform.position.x, (int)transform.position.y, 0), Quaternion.identity);
+
+        WorldManager.HousePositions.Add(homePosition);
+    }
+
+    public void SpawnBabies(int kidNum) 
+    {
+        int xTarget = Mathf.Clamp((int)transform.position.x, 0, MapGenerator.walkableGrid.GetLength(0) - 1);
+        int yTarget = Mathf.Clamp((int)transform.position.y, 0, MapGenerator.walkableGrid.GetLength(1) - 1);
+
+        for (int n = 0; n < kidNum; n++) 
+        {
+            WorldManager.SpawnHuman(this, houseObject, xTarget, yTarget, 50, 50, 0);
+        }
+
+        NumberOfChildren++;
     }
 }

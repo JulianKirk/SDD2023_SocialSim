@@ -24,14 +24,15 @@ public class HumanRecallState : State<HumanStateManager> //Both humans and anima
 
                 master.houseInventory.DumpMaterial(woodTransfer, stoneTransfer);
 
-                float foodSurplus = master.m_inventory.m_currentWeight - (master.m_inventory.m_maxWeight/2);
-                float foodDeficit = (master.m_inventory.m_maxWeight/4)  - master.m_inventory.m_currentWeight;
+                float foodSurplus = master.m_inventory.m_currentWeight - (60f); //Half of the weight
+                float foodDeficit = (30f)  - master.m_inventory.m_currentWeight; //A quarter of the weight
 
                 if (foodSurplus > 0) 
                 {
                     float meatRatio = master.m_inventory.RemoveFood(foodSurplus);
 
                     master.houseInventory.AddFood(foodSurplus, meatRatio);
+
                 } 
                 else if (foodDeficit > 0)
                 {
@@ -40,7 +41,7 @@ public class HumanRecallState : State<HumanStateManager> //Both humans and anima
                     master.m_inventory.AddFood(foodSurplus, meatRatio);
                 }
 
-                master.SwitchState(master.wanderingState); //Go wander again
+                master.SwitchState(master.decisiveState); //Go wander again
             } 
             else
             {
@@ -49,7 +50,7 @@ public class HumanRecallState : State<HumanStateManager> //Both humans and anima
                     master.SwitchState(master.buildHouseState);
                 } else 
                 {
-                    master.SwitchState(master.gatheringState); //Gather materials to build a home
+                    master.SwitchState(master.decisiveState); //Gather materials to build a home
                 }
             }
         }

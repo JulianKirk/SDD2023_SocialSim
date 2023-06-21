@@ -4,18 +4,17 @@ using UnityEngine;
 
 public class HumanWanderingState : State<HumanStateManager> //Both humans and animal wandering states can inherit from this
 {
-    int radius = 25; // Not an actual radius. It scans more of a square around the player
     float wanderDuration;
     float wanderTimer;
 
     public override void EnterState(HumanStateManager master) 
     {
-        Debug.Log("Started Wandering.");
+        Debug.Log("Food weight 0: " + master.m_inventory.GetFoodWeight());
 
         wanderDuration = Random.Range(5f, 15f);
         wanderTimer = wanderDuration;
 
-        master.Wander(radius);
+        master.Wander((int)master.m_vision);
     }
 
     public override void UpdateState(HumanStateManager master) 
@@ -24,8 +23,7 @@ public class HumanWanderingState : State<HumanStateManager> //Both humans and an
 
         if (wanderTimer <= 0) //If it reaches the destination quickly, it will stay there for a bit 
         {
-            Debug.Log("Start Wander");
-            master.Wander(radius);
+            master.Wander((int)master.m_vision);
 
             wanderDuration = Random.Range(5f, 15f);
             wanderTimer = wanderDuration;
@@ -35,6 +33,6 @@ public class HumanWanderingState : State<HumanStateManager> //Both humans and an
 
     public override void ExitState(HumanStateManager master)
     {
-        Debug.Log("Stopped Wandering.");
+
     }
 }

@@ -116,19 +116,12 @@ public class Inventory
 
     public float GetFoodWeight() 
     {
-        float weight = 0f;
+        return GetWeight(Item.Meat) + GetWeight(Item.Fruit);
+    }
 
-        if (m_items.ContainsKey(Item.Meat)) 
-        {
-            weight += m_items[Item.Meat];
-        }
-
-        if (m_items.ContainsKey(Item.Fruit)) 
-        {
-            weight += m_items[Item.Fruit];
-        }
-
-        return weight;
+    public float GetMaterialWeight() 
+    {
+        return GetWeight(Item.Stone) + GetWeight(Item.Wood);
     }
 
     public void DumpMaterial(float woodWeight, float stoneWeight) //Assuming it is being dumped into an endless container
