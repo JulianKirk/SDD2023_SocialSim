@@ -158,8 +158,12 @@ public class WorldManager : MonoBehaviour //GenericSingleton<WorldManager>
         int xSpawnPos = UnityEngine.Random.Range(0, data.mapSize);
         int ySpawnPos =  UnityEngine.Random.Range(0, data.mapSize);
 
-        // while ()
+        while (!MapGenerator.walkableGrid[xSpawnPos, ySpawnPos]) 
+        {
+            xSpawnPos = UnityEngine.Random.Range(0, data.mapSize);
+            ySpawnPos =  UnityEngine.Random.Range(0, data.mapSize);
+        }
 
-        // SpawnHumans(HumanPrefab, null, 10, (int)position.x, (int)position.y, 15, simData.intelligence, simData.strength, 20);
+        SpawnHumans(HumanPrefab, null, 10, xSpawnPos, ySpawnPos, 15, (int)data.intelligence, (int)data.strength, 20);
     }
 }
