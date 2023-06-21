@@ -4,6 +4,7 @@ using UnityEngine;
 using Newtonsoft.Json;
 using System.IO;
 using UnityEngine.UI;
+using UnityEngine.Audio;
 
 public class OptionsMenu : MonoBehaviour
 {
@@ -11,6 +12,8 @@ public class OptionsMenu : MonoBehaviour
 
     public Slider MasterVolume;
     public Slider PanSensitivity;
+
+    public AudioMixer MainMixer;
 
     public GameObject mainMenu;
 
@@ -20,9 +23,11 @@ public class OptionsMenu : MonoBehaviour
         
         if (!File.Exists(savePath)) 
         {
-            string jsonText = JsonConvert.SerializeObject(new OptionsData(50, 0.5f));
+            string jsonText = JsonConvert.SerializeObject(new OptionsData(0.5f, 0.5f));
 
             File.WriteAllText(savePath, jsonText);
+
+            MainMixer.SetFloat("Master", (0.5f * 80) - 80);
         } 
         else //Load previously saved data 
         {
@@ -32,6 +37,8 @@ public class OptionsMenu : MonoBehaviour
 
             MasterVolume.value = optionsData.masterVolume;
             PanSensitivity.value = optionsData.panSensitivity;
+
+            MainMixer.SetFloat("Master", (optionsData.masterVolume * 80) - 80);
         }
     }
 
@@ -42,6 +49,8 @@ public class OptionsMenu : MonoBehaviour
         string jsonText = JsonConvert.SerializeObject(dataToSave);
 
         File.WriteAllText(savePath, jsonText);
+
+        MainMixer.SetFloat("Master", (dataToSave.masterVolume * 80) - 80);
     }
 
     public void ExitMenu() 

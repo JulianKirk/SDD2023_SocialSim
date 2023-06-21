@@ -5,12 +5,16 @@ using UnityEngine;
 public class SimData
 {
     public float numberOfHumans;
+
     public float intelligence;
     public float strength;
 
-    public SimData(float humanNum, float intel, float str) 
+    public int mapSize;
+
+    public SimData(float humanNum, int map, float intel, float str) 
     {
         numberOfHumans = humanNum;
+        mapSize = map;
         intelligence = intel;
         strength = str;
     }

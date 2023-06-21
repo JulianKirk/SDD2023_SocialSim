@@ -13,6 +13,7 @@ public class CreateSimMenu : MonoBehaviour
     public Slider IntelligenceSlider;
     public Slider StrengthSlider;
     public Slider HumanNumberSlider;
+    public Slider MapSizeSlider;
 
     public GameObject mainMenu;
 
@@ -23,7 +24,7 @@ public class CreateSimMenu : MonoBehaviour
 
     public void StartSimulation() //Added to the OnValueChange events on the sliders in the editor
     {
-        SimData dataToSave = new SimData(HumanNumberSlider.value, IntelligenceSlider.value, StrengthSlider.value);
+        SimData dataToSave = new SimData(HumanNumberSlider.value, (int)MapSizeSlider.value, IntelligenceSlider.value, StrengthSlider.value);
 
         string jsonText = JsonConvert.SerializeObject(dataToSave);
 
