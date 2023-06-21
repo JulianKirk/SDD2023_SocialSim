@@ -3,7 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-
+using System.IO;
+using Newtonsoft.Json;
 
 public class WorldManager : MonoBehaviour //GenericSingleton<WorldManager>
 {
@@ -33,15 +34,26 @@ public class WorldManager : MonoBehaviour //GenericSingleton<WorldManager>
 
     public static int yearlyDeathCount;
     Dictionary<int, int> deathCountsByYear = new Dictionary<int, int>();
+    
+    public MapGenerator mapGenerator; //Assigned in editor
 
     // public static Vector2Int CivilizationCenter;
 
     // Start is called before the first frame update
+    
     void Start()
     {
         HumanHolder = GameObject.Find("HumanHolder").transform;
 
         yearlyDeathCount = 0;
+
+        //Fetch simulation data created in the "Create new simulation" menu
+        string savePath = Application.persistentDataPath + "/simData.json";
+        string jsonText = File.ReadAllText(savePath);
+
+        SimData simData = JsonConvert.DeserializeObject<SimData>(jsonText);
+
+        StartSimulation(simData);
     }
 
     // Update is called once per frame
@@ -64,14 +76,14 @@ public class WorldManager : MonoBehaviour //GenericSingleton<WorldManager>
             timeSinceLastMonth = 0;
         }
 
-        if (Input.GetKeyDown(KeyCode.J)) 
-        {
-            Debug.Log("Attempting to spawn humans.");
+        // if (Input.GetKeyDown(KeyCode.J)) 
+        // {
+        //     Debug.Log("Attempting to spawn humans.");
 
-            Vector3 position = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, Camera.main.nearClipPlane));
+        //     Vector3 position = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, Camera.main.nearClipPlane));
 
-            SpawnHumans(HumanPrefab, null, 10, (int)position.x, (int)position.y, 15, 5, 5, 20);
-        }
+        //     SpawnHumans(HumanPrefab, null, 10, (int)position.x, (int)position.y, 15, 5, 5, 20);
+        // }
     }
 
     public void StartNewYear() 
@@ -134,5 +146,20 @@ public class WorldManager : MonoBehaviour //GenericSingleton<WorldManager>
         HumanCollective.Add(newHuman);
 
         newHuman.OnSpawn(new Vector2Int(xPos, yPos), homeObject, iq, str, age);
+    }
+
+    void StartSimulation(SimData data) 
+    {
+        int heatSeed = UnityEngine.Random.Range(0, 10000);
+        int heightSeed = UnityEngine.Random.Range(0, 10000);
+
+        mapGenerator.GenerateMap(data.mapSize, data.mapSize, heatSeed, heightSeed, 1, 1, 1);
+
+        int xSpawnPos = UnityEngine.Random.Range(0, data.mapSize);
+        int ySpawnPos =  UnityEngine.Random.Range(0, data.mapSize);
+
+        // while ()
+
+        // SpawnHumans(HumanPrefab, null, 10, (int)position.x, (int)position.y, 15, simData.intelligence, simData.strength, 20);
     }
 }

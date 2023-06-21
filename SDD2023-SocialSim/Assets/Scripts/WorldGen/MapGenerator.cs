@@ -34,7 +34,7 @@ public class MapGenerator : MonoBehaviour
     int m_mapLength;
     int m_mapWidth;
 
-    void GenerateMap(int mapWidth, int mapLength, int heightSeed, int heatSeed, float frequency, float horizontalDilation, float verticalDilation) 
+    public void GenerateMap(int mapWidth, int mapLength, int heightSeed, int heatSeed, float frequency, float horizontalDilation, float verticalDilation) 
     {
         walkableGrid = new bool[mapWidth, mapLength];
 
@@ -182,6 +182,6 @@ public class MapGenerator : MonoBehaviour
         m_noise.SetFractalType(FastNoiseLite.FractalType.FBm);
         m_noise.SetFractalOctaves(5);
 
-        GenerateMap(100, 100, 983, 920, 1f, 1f, 1f);
+        // GenerateMap(100, 100, 983, 920, 1f, 1f, 1f);
     }
 }

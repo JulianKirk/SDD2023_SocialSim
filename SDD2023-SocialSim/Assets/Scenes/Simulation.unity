@@ -492,3 +492,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   TimeGoal: 100
   HumanPrefab: {fileID: 8596026480845686662, guid: 9356cfb268cc00a4da5100d51fee520e, type: 3}
+  mapGenerator: {fileID: 1727797649}
