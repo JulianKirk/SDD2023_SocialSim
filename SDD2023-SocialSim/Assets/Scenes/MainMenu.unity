@@ -1103,7 +1103,19 @@ MonoBehaviour:
   m_Value: 1
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1270702285}
+        m_TargetAssemblyTypeName: CreateSimMenu, Assembly-CSharp
+        m_MethodName: UpdateIntelligenceText
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &348530373
 GameObject:
   m_ObjectHideFlags: 0
@@ -2023,7 +2035,19 @@ MonoBehaviour:
   m_Value: 20
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1270702285}
+        m_TargetAssemblyTypeName: CreateSimMenu, Assembly-CSharp
+        m_MethodName: UpdateMapSizeText
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &474752399
 GameObject:
   m_ObjectHideFlags: 0
@@ -4486,6 +4510,10 @@ MonoBehaviour:
   StrengthSlider: {fileID: 1359246006}
   HumanNumberSlider: {fileID: 1790660836}
   MapSizeSlider: {fileID: 468631915}
+  IntelligenceText: {fileID: 1139870429}
+  StrengthText: {fileID: 348530375}
+  HumanNumberText: {fileID: 1373989170}
+  MapSizeText: {fileID: 1752768257}
   mainMenu: {fileID: 495834809}
 --- !u!1 &1359246004
 GameObject:
@@ -4577,7 +4605,19 @@ MonoBehaviour:
   m_Value: 1
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1270702285}
+        m_TargetAssemblyTypeName: CreateSimMenu, Assembly-CSharp
+        m_MethodName: UpdateStrengthText
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &1367058083
 GameObject:
   m_ObjectHideFlags: 0
@@ -4770,7 +4810,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 1
+  m_text: 2
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -6504,7 +6544,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 1
+  m_text: 20
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -6708,7 +6748,19 @@ MonoBehaviour:
   m_Value: 2
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1270702285}
+        m_TargetAssemblyTypeName: CreateSimMenu, Assembly-CSharp
+        m_MethodName: UpdateHumanNumberText
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &1809841591
 GameObject:
   m_ObjectHideFlags: 0
