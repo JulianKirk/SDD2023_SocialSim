@@ -190,8 +190,6 @@ public class HumanStateManager : EntityStateManager
     {
         if ((m_inventory.GetFoodWeight()) < (-m_age * (m_age - 100f) * (0.006f))) //They starve if they don't have enough food
         {
-            Debug.Log("I starved during the " + m_currentState + " state.");
-
             WorldManager.RESULTS.deathsByCauses["Starvation"] += 1;
 
             Die();
@@ -232,6 +230,8 @@ public class HumanStateManager : EntityStateManager
         if (Random.Range(0, 100) < 5) //5% chance to die from disease
         {
             WorldManager.RESULTS.deathsByCauses["Disease"] += 1;
+
+            Die();
         }
     }
 

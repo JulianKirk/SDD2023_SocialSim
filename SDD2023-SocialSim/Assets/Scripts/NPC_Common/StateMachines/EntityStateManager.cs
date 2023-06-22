@@ -72,17 +72,23 @@ public abstract class EntityStateManager : MonoBehaviour
         
         if (currentPath == null || currentPath.Count < 1) 
         {
-            Debug.Log("Destination is unreachable");
+            // Debug.Log("Destination is unreachable");
             return false;
         }
         else 
         {
-            currentTarget = currentPath[0];
+            try
+            {
+                currentTarget = currentPath[0];
 
-            rBody.velocity = new Vector2(currentTarget.xPos - transform.position.x, currentTarget.yPos - transform.position.y);
-            rBody.velocity.Normalize();
-            rBody.velocity = rBody.velocity * m_speed;
+                rBody.velocity = new Vector2(currentTarget.xPos - transform.position.x, currentTarget.yPos - transform.position.y);
+                rBody.velocity.Normalize();
+                rBody.velocity = rBody.velocity * m_speed;
+            }
+            catch
+            {
 
+            }
             return true;
         }
     }
