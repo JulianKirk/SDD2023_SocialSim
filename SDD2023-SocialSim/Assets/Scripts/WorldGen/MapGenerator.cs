@@ -181,18 +181,24 @@ public class MapGenerator : MonoBehaviour
                         if (Random.Range(0, 100) < 7)
                         {
                             Instantiate(stoneResources[Random.Range(0, stoneResources.Length)], new Vector3(x, y, 0), Quaternion.identity);
+
+                            walkableGrid[x, y] = false;
                         }
                         break;
                     case TileResourceClass.Wood: 
                         if (Random.Range(0, 100) < 25)
                         {
                             Instantiate(woodResources[Random.Range(0, woodResources.Length)], new Vector3(x, y, 0), Quaternion.identity);
+
+                            walkableGrid[x, y] = false;
                         }
                         break;
                     case TileResourceClass.Fruit: 
                         if (Random.Range(0, 100) < 12)
                         {
                             Instantiate(fruitResources[Random.Range(0, fruitResources.Length)], new Vector3(x, y, 0), Quaternion.identity);
+
+                            walkableGrid[x, y] = false;
                         }
                         break;
                     case TileResourceClass.Meat: 

@@ -24,7 +24,7 @@ public class AstarPathfinding
         if (endNode.walkable == false)
         {
             
-            // Debug.Log("Astar Failed. Iterated " + "0" + " times");
+            Debug.Log("Astar Failed. Iterated " + "0" + " times");
             return null;
         }
 

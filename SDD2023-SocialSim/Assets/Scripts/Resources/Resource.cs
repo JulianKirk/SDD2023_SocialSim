@@ -23,6 +23,7 @@ public class Resource : MonoBehaviour
 
     protected void Die() 
     {
+        MapGenerator.walkableGrid[(int)transform.position.x, (int)transform.position.y] = true;
         //Maybe play a dying animation and sound
         Destroy(gameObject);
     }

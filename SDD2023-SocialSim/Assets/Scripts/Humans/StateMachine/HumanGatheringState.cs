@@ -45,7 +45,7 @@ public class HumanGatheringState : State<HumanStateManager>
 
         if (resourceSense != null) 
         {
-            master.GeneratePath((int)resourceSense.transform.position.x, (int)resourceSense.transform.position.y);
+            master.GeneratePath((int)resourceSense.transform.position.x, (int)resourceSense.transform.position.y, true);
 
             currentTargetedResourceInstance = resourceSense;
         }
@@ -91,7 +91,7 @@ public class HumanGatheringState : State<HumanStateManager>
 
                     if (resourceSense != null) 
                     {
-                        if(!master.GeneratePath((int)resourceSense.transform.position.x, (int)resourceSense.transform.position.y)) 
+                        if(!master.GeneratePath((int)resourceSense.transform.position.x, (int)resourceSense.transform.position.y, true)) 
                         {
                             resourceSense.enabled = false; //Disables the collider so that it is no longer a target for gatherers - unreachable
 

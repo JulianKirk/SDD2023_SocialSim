@@ -36,7 +36,7 @@ public abstract class EntityStateManager : MonoBehaviour
     public virtual void SwitchState(State<AnimalStateManager> newState) {}
     public virtual void SwitchState(State<HumanStateManager> newState) {}
 
-    public bool GeneratePath(int targetX, int targetY) //Needs to be called by state classes, bool indicates if it failed or not
+    public bool GeneratePath(int targetX, int targetY, bool isResource = false) //Needs to be called by state classes, bool indicates if it failed or not
     {
         if (targetX < 0 || targetX >= MapGenerator.walkableGrid.GetLength(0) || targetY < 0 || targetY >= MapGenerator.walkableGrid.GetLength(1)) 
         {
@@ -53,6 +53,11 @@ public abstract class EntityStateManager : MonoBehaviour
             {
                 baseGrid[x, y] = new PathNode(x, y, MapGenerator.walkableGrid[x, y]);
             }
+        }
+
+        if (isResource)
+        {
+            baseGrid[targetX, targetY] = new PathNode(targetX, targetY, true);
         }
 
         // PathNode[,] baseGrid = (PathNode[,])TempWorldGen.nodeGrid.Clone(); -- FOR SOME REASON THIS IS RIDICULOUSLY PERFORMANCE INTENSIVE SO IT JUST CRASHES
