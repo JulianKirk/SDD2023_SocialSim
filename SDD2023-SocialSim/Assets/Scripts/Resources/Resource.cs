@@ -8,6 +8,11 @@ public class Resource : MonoBehaviour
 
     public Inventory m_inventory;
 
+    void Start()
+    {
+        ResourceColliderManager.instance.RegisterInventory(gameObject.GetComponent<Collider2D>(), this);
+    }
+
     void Update()
     {
         if (m_inventory.m_currentWeight <= 0) 

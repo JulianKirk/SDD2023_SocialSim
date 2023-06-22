@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+//I used this in testing to display a series of obstacles for Astar to navigate around
 public class TempWorldGen : MonoBehaviour
 {   
     public int mapWidth;

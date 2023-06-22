@@ -23,6 +23,9 @@ public class HumanStateManager : EntityStateManager
     public bool hasPartner;
     private HumanStateManager m_partner; 
 
+    public Sprite[] maleSprites;
+    public Sprite[] femaleSprites;
+
     public int NumberOfChildren;
 
     //public HumanStateManager babyTemplate; //Assigned in editor
@@ -111,9 +114,22 @@ public class HumanStateManager : EntityStateManager
 
         m_age = age;
 
-        m_sex = Random.Range(0, 2) == 0 ? Sex.male : Sex.female;
+        m_sex = Random.Range(0, 2) == 1 ? Sex.male : Sex.female;
 
         Debug.Log("Sex: " + m_sex);
+
+        switch(m_sex)
+        {
+            case Sex.male:
+                gameObject.GetComponent<SpriteRenderer>().sprite = maleSprites[Random.Range(0, maleSprites.Length)];
+                break;
+            case Sex.female:
+                gameObject.GetComponent<SpriteRenderer>().sprite = femaleSprites[Random.Range(0, femaleSprites.Length)];
+                break;
+            default:
+                gameObject.GetComponent<SpriteRenderer>().sprite = maleSprites[Random.Range(0, maleSprites.Length)];
+                break;
+        }
 
         m_intelligence = -m_age * (m_age - 100f) * (0.03f) + 0.5f;
         m_strength = -m_age * (m_age - 100f) * (0.03f) + 0.5f;
@@ -149,12 +165,7 @@ public class HumanStateManager : EntityStateManager
 
         if (m_age == 15) 
         {
-            WorldManager.HousePositions.Remove(homePosition);
-
-            if (!WorldManager.HousePositions.Contains(homePosition)) 
-            {
-                Destroy(houseObject);
-            }
+            LeaveHouse();
 
             homeOwner = false;
             //houseObject = null; - Can't do this because Unity overrides it in a weird way
@@ -216,6 +227,11 @@ public class HumanStateManager : EntityStateManager
             && m_currentState != breedingState) 
         {
             SwitchState(recallState);
+        }
+
+        if (Random.Range(0, 100) < 5) //5% chance to die from disease
+        {
+            WorldManager.RESULTS.deathsByCauses["Disease"] += 1;
         }
     }
 
@@ -300,5 +316,15 @@ public class HumanStateManager : EntityStateManager
         WorldManager.RESULTS.birthsByYear[WorldManager.YearsPassed] += kidNum;
 
         NumberOfChildren++;
+    }
+
+    public void LeaveHouse() 
+    {
+        WorldManager.HousePositions.Remove(homePosition);
+
+        if (!WorldManager.HousePositions.Contains(homePosition)) 
+        {
+            Destroy(houseObject);
+        }
     }
 }

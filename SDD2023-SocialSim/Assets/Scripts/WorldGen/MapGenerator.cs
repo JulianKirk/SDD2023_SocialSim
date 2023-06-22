@@ -77,7 +77,15 @@ public class MapGenerator : MonoBehaviour
                 }
                 else if (heightMap[x, y] > 0) 
                 {
-                    if (heatMap[x, y] > 0.2) 
+                    if  (heatMap[x, y] > 0.6) 
+                    {
+                        tileMap.SetTile(new Vector3Int(x, y), tilePrefabs[5]);
+
+                        mapResourceClasses[x, y] = TileResourceClass.None;
+
+                        walkableGrid[x, y] = false;
+                    }
+                    else if (heatMap[x, y] > 0.2) 
                     {
                         tileMap.SetTile(new Vector3Int(x, y), tilePrefabs[0]);
 
@@ -104,7 +112,15 @@ public class MapGenerator : MonoBehaviour
                 }
                 else if (heightMap[x, y] > -0.3) 
                 {
-                    if (heatMap[x, y] > 0.2) 
+                    if  (heatMap[x, y] > 0.6) 
+                    {
+                        tileMap.SetTile(new Vector3Int(x, y), tilePrefabs[5]);
+
+                        mapResourceClasses[x, y] = TileResourceClass.None;
+
+                        walkableGrid[x, y] = false;
+                    }
+                    else if (heatMap[x, y] > 0.2) 
                     {
                         tileMap.SetTile(new Vector3Int(x, y), tilePrefabs[0]);
 
@@ -118,7 +134,15 @@ public class MapGenerator : MonoBehaviour
                 }
                 else
                 {
-                    if (heatMap[x, y] > 0.2)
+                    if  (heatMap[x, y] > 0.6) 
+                    {
+                        tileMap.SetTile(new Vector3Int(x, y), tilePrefabs[5]);
+
+                        mapResourceClasses[x, y] = TileResourceClass.None;
+
+                        walkableGrid[x, y] = false;
+                    }
+                    else if (heatMap[x, y] > 0.2)
                     {
                         tileMap.SetTile(new Vector3Int(x, y), tilePrefabs[0]);
 

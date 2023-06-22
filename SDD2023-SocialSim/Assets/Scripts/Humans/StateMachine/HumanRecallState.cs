@@ -13,8 +13,8 @@ public class HumanRecallState : State<HumanStateManager> //Both humans and anima
 
     public override void UpdateState(HumanStateManager master) 
     {
-        if (Mathf.Abs(master.homePosition.x - master.transform.position.x) <= 1.15f 
-            && Mathf.Abs(master.homePosition.y - master.transform.position.y) <= 1.15f) 
+        if (Mathf.Abs(master.homePosition.x - master.transform.position.x) <= 0.5f 
+            && Mathf.Abs(master.homePosition.y - master.transform.position.y) <= 0.5f) 
         {
             if(master.homeOwner) 
             {

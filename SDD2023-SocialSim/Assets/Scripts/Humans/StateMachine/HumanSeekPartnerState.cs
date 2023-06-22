@@ -4,13 +4,14 @@ using UnityEngine;
 
 public class HumanSeekPartnerState : State<HumanStateManager> //Both humans and animal wandering states can inherit from this
 {
-    float searchInterval = 5f;
+    float searchInterval;
     float timeSinceLastSearch;
     float totalTimeSearching;
     float partnerSearchLimit = 30f;
 
     public override void EnterState(HumanStateManager master) 
     {
+        searchInterval = Random.Range(3f, 9f);
         timeSinceLastSearch = 0f;
         totalTimeSearching = 0f;
 
@@ -20,9 +21,20 @@ public class HumanSeekPartnerState : State<HumanStateManager> //Both humans and 
         {
             if (SeekPartner(master)) 
             {
-                if (master.m_sex == Sex.male) //Men will move into their partner's house 
+                if (master.m_sex == Sex.male) //Men will move into their partner's house for this simulation
                 {
+                    //Walk to their partner's house
                     master.GeneratePath(master.Partner.homePosition.x, master.Partner.homePosition.y);
+
+                    //Transfer all the stuff form their house to their partner's house
+                    master.Partner.houseInventory.Add(master.houseInventory);
+
+                    master.LeaveHouse();
+
+                    //Move into their partner's house
+                    master.houseObject = master.Partner.houseObject;
+                    master.houseInventory = master.Partner.houseInventory;
+                    master.homePosition = master.Partner.homePosition;
                 } 
                 else 
                 {
@@ -37,7 +49,7 @@ public class HumanSeekPartnerState : State<HumanStateManager> //Both humans and 
             }
         } else 
         {
-            if (master.m_sex == Sex.male) //Men will move into their partner's house 
+            if (master.m_sex == Sex.male) //In this simulation, men will go to their partner's house to breed
                 {
                     master.GeneratePath(master.Partner.homePosition.x, master.Partner.homePosition.y);
                 } 
@@ -50,6 +62,8 @@ public class HumanSeekPartnerState : State<HumanStateManager> //Both humans and 
 
     public override void UpdateState(HumanStateManager master) 
     {
+        totalTimeSearching += Time.deltaTime;
+
         if (!master.hasPartner) //Will run at intervals until they stop bothering to seek partners or 
         {
             timeSinceLastSearch += Time.deltaTime;
@@ -70,15 +84,17 @@ public class HumanSeekPartnerState : State<HumanStateManager> //Both humans and 
                 }
 
                 timeSinceLastSearch = 0f;
+                searchInterval = Random.Range(3f, 9f);
             }
 
             if (totalTimeSearching > partnerSearchLimit) //Searching for too long - need to go about daily activites
             {
-                // master.SwitchState(master.)
+                totalTimeSearching = 0f;
+                master.SwitchState(master.decisiveState);
             }
         }
-        else if (Mathf.Abs(master.Partner.homePosition.x - master.transform.position.x) <= 1.15f 
-            && Mathf.Abs(master.Partner.homePosition.y - master.transform.position.y) <= 1.15f) 
+        else if (Mathf.Abs(master.Partner.homePosition.x - master.transform.position.x) <= 1f 
+            && Mathf.Abs(master.Partner.homePosition.y - master.transform.position.y) <= 1f) 
         {
             master.SwitchState(master.breedingState);
         }
@@ -98,7 +114,7 @@ public class HumanSeekPartnerState : State<HumanStateManager> //Both humans and 
             if (!human.hasPartner && (human.m_sex != master.m_sex) && human.seekingPartner) 
             {
                     human.Partner = master;
-                    master.Partner = human; //Should set hasPartner to true
+                    master.Partner = human; //The setter here should set hasPartner to true
                     return true; //No need to search anymore
             }
         }

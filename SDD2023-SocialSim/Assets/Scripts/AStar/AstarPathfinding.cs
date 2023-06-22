@@ -24,7 +24,7 @@ public class AstarPathfinding
         if (endNode.walkable == false)
         {
             
-            Debug.Log("Astar Failed. Iterated " + "0" + " times");
+            // Debug.Log("Astar Failed. Iterated " + "0" + " times");
             return null;
         }
 
@@ -61,6 +61,7 @@ public class AstarPathfinding
                     continue;
                 }
 
+                //Calculate the new neighbour G cost as if traveling from the current selected node
                 int newNeigbourGCost = currentNode.gCost + CalculateDistance(currentNode, neighbourNode);
 
                 if (neighbourNode.gCost > newNeigbourGCost) 
@@ -80,7 +81,7 @@ public class AstarPathfinding
             tempIterationCount++;
         }
 
-        Debug.Log("Astar Failed. Iterated " + tempIterationCount + " times");
+        // Debug.Log("Astar Failed. Iterated " + tempIterationCount + " times");
         return null; //Just return null list if it somehow fails - most likely due to the end point being an obstacle
     }
 
@@ -98,9 +99,7 @@ public class AstarPathfinding
             currentNode = currentNode.parent;
         }
 
-        // path.Add(startNode); //So that it can stay on the same tile if need be
-
-        path.Reverse();
+        path.Reverse(); //Because the nodes were added into the list in reverse order
 
         path.Remove(startNode);
 
@@ -116,12 +115,13 @@ public class AstarPathfinding
         {
             for (int j = -1; j <= 1; j++) 
             {
+                //Apply offsets
                 int realX = centreNode.xPos + i;
                 int realY = centreNode.yPos + j;
 
                 if((i == 0 && j == 0) || realX < 0 || realX >= DefaultGrid.GetLength(0) || realY < 0 || realY >= DefaultGrid.GetLength(1)) 
                 {
-                    continue;
+                    continue; //Check the coordinates if the current realX and realY are out of the grid or refer to the centre node
                 }
 
                 PathNode possibleNeighbour = DefaultGrid[realX, realY];
@@ -136,7 +136,8 @@ public class AstarPathfinding
         return neighbourList;
     }
 
-    private int CalculateDistance(PathNode Node1, PathNode Node2) //Each side of a tile is 10, Diagonals will be rounded to 14
+    //Each side of a tile is 10, Diagonals will be rounded to 14
+    private int CalculateDistance(PathNode Node1, PathNode Node2)
     {
         int xDistance = Mathf.Abs(Node1.xPos - Node2.xPos);
         int yDistance = Mathf.Abs(Node1.yPos - Node2.yPos);

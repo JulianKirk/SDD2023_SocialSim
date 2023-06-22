@@ -75,12 +75,12 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 20
-  m_Sprite: {fileID: -2413806693520163455, guid: a86470a33a6bf42c4b3595704624658b, type: 3}
-  m_Color: {r: 1, g: 0.07510978, b: 0, a: 1}
+  m_Sprite: {fileID: 21300000, guid: 16dd0cdac46f1da4db3c8c0d55ac1ddf, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 1.28, y: 1.28}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -125,10 +125,24 @@ MonoBehaviour:
   homePosition: {x: 0, y: 0}
   m_intelligence: 0
   m_strength: 0
+  m_sex: 0
+  seekingPartner: 0
+  hasPartner: 0
+  maleSprites:
+  - {fileID: 21300000, guid: a3dba37991ff02a4cb7b1124ae9c3d96, type: 3}
+  - {fileID: 21300000, guid: ccdf8d3c873784a4b8dfc7de59feb331, type: 3}
+  - {fileID: 21300000, guid: 3aa55296004bd9e478aa137fd0d9d0cf, type: 3}
+  - {fileID: 21300000, guid: 16dd0cdac46f1da4db3c8c0d55ac1ddf, type: 3}
+  femaleSprites:
+  - {fileID: 21300000, guid: 640d36b4f34c38a409b13a724835cf7c, type: 3}
+  - {fileID: 21300000, guid: 5852f936390ac9947ae8f364d9c2309c, type: 3}
+  - {fileID: 21300000, guid: 430ef5c9e8a3a26408df9be14d654686, type: 3}
+  - {fileID: 21300000, guid: a5fdaa1b188e5b748af1cf190faa8fcb, type: 3}
+  NumberOfChildren: 0
   housePrefab: {fileID: 2483494831406753662, guid: 2b69d0e7edede934f9966ad4bdff141b, type: 3}
   homeOwner: 0
   houseObject: {fileID: 0}
-  yrsPerSecond: 0
+  isStarving: 0
   enemies:
     serializedVersion: 2
     m_Bits: 128

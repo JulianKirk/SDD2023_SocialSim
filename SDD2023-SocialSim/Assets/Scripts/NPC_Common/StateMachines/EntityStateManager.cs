@@ -117,8 +117,6 @@ public abstract class EntityStateManager : MonoBehaviour
 
     public virtual void Die() //Most animals will drop meat, human deaths will increase a death counter stored in the world manager
     {
-        Debug.Log("Entity died");
-
         WorldManager.OnNewYear -= OnNewYear;
         WorldManager.OnNewMonth -= OnNewMonth;
 

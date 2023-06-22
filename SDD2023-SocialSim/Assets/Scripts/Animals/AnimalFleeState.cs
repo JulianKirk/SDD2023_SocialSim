@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class AnimalFleeState : State<AnimalStateManager> //Both humans and animal wandering states can inherit from this
 {
-    int radius = 25; // Not an actual radius. It scans more of a square around the player
+    int radius = 25; // Not an actual radius. It scans more of a square around the centre point
     float fleeTimer;
 
     public override void EnterState(AnimalStateManager master) 

@@ -2,13 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+//This was a script I used temporarily to test out the path generated through AStar
 public class TempPathFollower : MonoBehaviour
 {
     public float speed;
     
-    private PathNode currentTarget;
+    private PathNode currentTarget; //Next node on the path to travel to
     private List<PathNode> currentPath;
-    private int currentPathIndex;
+    private int currentPathIndex; //Index of the currentTarget in the currentPath
 
     public GameObject marker;
 
@@ -56,7 +57,7 @@ public class TempPathFollower : MonoBehaviour
         if (currentPath != null) {
             foreach (PathNode node in currentPath) 
             {
-                Instantiate(marker, new Vector3(node.xPos, node.yPos, 0f), Quaternion.identity);
+                Instantiate(marker, new Vector3(node.xPos, node.yPos, 0f), Quaternion.identity); //Reveal the path for testing with markers
             }
         }
 
@@ -67,7 +68,7 @@ public class TempPathFollower : MonoBehaviour
         // rb.velocity = rb.velocity * speed;
     }
 
-    void FollowPath() 
+    void FollowPath() //Follow the path generated through AStar
     {
         if (currentTarget != null) 
         {

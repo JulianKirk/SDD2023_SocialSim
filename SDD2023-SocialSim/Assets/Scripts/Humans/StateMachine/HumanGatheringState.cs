@@ -68,27 +68,24 @@ public class HumanGatheringState : State<HumanStateManager>
             {
                 resourceSense = Physics2D.OverlapCircle(master.transform.position, master.m_vision, currentTargetedResourceMask);
 
-                if (resourceSense == null) 
+                if (resourceSense != null)  //If there is a desired resource nearby it starts searching the area
                 {
                     currentState = GatheringStates.Searching;
                 } 
                 else if (Mathf.Abs(master.lastSeenResourceLocations[master.currentResourceTargets[0]].x - master.transform.position.x) <= 1.15f 
                     && Mathf.Abs(master.lastSeenResourceLocations[master.currentResourceTargets[0]].y - master.transform.position.y) <= 1.15f) //Check if the human is already at the resource
                 {
-                    currentState = GatheringStates.Searching;
+                    currentState = GatheringStates.Searching; //Once it reaches where it found that resource before it goes searching the area
                 }
                 break;
             }
             case GatheringStates.Searching: 
             {
 
-                // Debug.Log("Current targeted resource is: " + (int)currentTargetedResourceMask);
-
                 timeSinceLastSearch -= Time.deltaTime;
 
-                if (currentTargetedResourceInstance == null) //If another NPC gets there first
+                if (currentTargetedResourceInstance == null) //Occurs if another NPC gets there first an destroys it
                 {
-                    // master.ClearPath();
 
                     resourceSense = Physics2D.OverlapCircle(master.transform.position, master.m_vision, currentTargetedResourceMask);
 
@@ -97,9 +94,8 @@ public class HumanGatheringState : State<HumanStateManager>
                         if(!master.GeneratePath((int)resourceSense.transform.position.x, (int)resourceSense.transform.position.y)) 
                         {
                             resourceSense.enabled = false; //Disables the collider so that it is no longer a target for gatherers - unreachable
-                            
-                            // master.Wander(15);
-                            // timeSinceLastSearch = searchInterval;
+
+                            master.Wander((int)master.m_vision);
                         } 
                         else 
                         {
@@ -114,14 +110,15 @@ public class HumanGatheringState : State<HumanStateManager>
                         timeSinceLastSearch = searchInterval;
                     }
                 } 
-                else if (Mathf.Abs(currentTargetedResourceInstance.transform.position.x - master.transform.position.x) <= 1.15f 
-                    && Mathf.Abs(currentTargetedResourceInstance.transform.position.y - master.transform.position.y) <= 1.15f) //Check if the human is already at the resource
+                else if (Mathf.Abs(currentTargetedResourceInstance.transform.position.x - master.transform.position.x) <= 0.5f 
+                    && Mathf.Abs(currentTargetedResourceInstance.transform.position.y - master.transform.position.y) <= 0.5f) //Check if the human is already at the resource
                 {
                     master.ClearPath(); //Stop walking
 
-                    resourceInventory = currentTargetedResourceInstance.GetComponent<Resource>().m_inventory;
+                    Resource targetedResource = ResourceColliderManager.instance.GetInventory(currentTargetedResourceInstance);
 
-                    currentTargetedResourceType = currentTargetedResourceInstance.GetComponent<Resource>().ResourceType;
+                    resourceInventory = targetedResource.m_inventory;
+                    currentTargetedResourceType = targetedResource.ResourceType;
 
                     master.lastSeenResourceLocations[currentTargetedResourceType] =  new Vector2Int((int)currentTargetedResourceInstance.transform.position.x, (int)currentTargetedResourceInstance.transform.position.y);
 
@@ -139,10 +136,8 @@ public class HumanGatheringState : State<HumanStateManager>
 
                 timeSinceLastGather -= Time.deltaTime;
 
-                // Inventory resourceInventory = resourceSense.GetComponent<Resource>().m_inventory;
-
                 /*
-                    Insert gathering animation based on the resource gathering type.
+                    Future - Insert gathering animation based on the resource gathering type.
                     E.g. axe cutting, pickaxe mining, grass picking
                 */
 
@@ -166,8 +161,6 @@ public class HumanGatheringState : State<HumanStateManager>
                 //The resource inventory might delete later in the frame. Short circuits if it does, checks weight if it doesn't.
                 if (resourceInventory == null || resourceInventory.m_currentWeight == 0f) 
                 {
-                    // currentTargetedResourceInstance = null;
-
                     if(master.m_inventory.GetFoodWeight() > master.m_inventory.m_maxWeight * 0.5) 
                     {
                         master.isStarving = false;
@@ -207,9 +200,4 @@ public class HumanGatheringState : State<HumanStateManager>
             currentTargetedResourceMask = currentTargetedResourceMask | 1 << 10;
         }
     }
-
-    // Collider2D SenseResource(HumanStateManager master) 
-    // {
-    //     return Physics2D.OverlapCircle(master.transform.position, master.m_vision, currentTargetedResource);
-    // }
 }

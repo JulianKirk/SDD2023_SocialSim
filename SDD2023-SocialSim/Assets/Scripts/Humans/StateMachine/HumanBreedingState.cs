@@ -2,27 +2,26 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class HumanBreedingState : State<HumanStateManager> //Both humans and animal wandering states can inherit from this
+public class HumanBreedingState : State<HumanStateManager>
 {
     float totalBreedTime;
     float remainingBreedTime;
 
     public override void EnterState(HumanStateManager master) 
     {
-        totalBreedTime = (WorldManager.secondsPerYr)/12;
+        totalBreedTime = (WorldManager.secondsPerYr)/24; //Takes half a month to produce a baby
         remainingBreedTime = totalBreedTime;
     }
 
     public override void UpdateState(HumanStateManager master) 
     {
-        remainingBreedTime -= Time.deltaTime;
-
-        //Play some sort of building animation
+        remainingBreedTime -= Time.deltaTime; //Decrement as time goes on
 
         if (remainingBreedTime <= 0) 
         {
-            //Chance to have twins
+            //10% Chance to have twins
             int numOfKids = Random.Range(0, 100) < 10 ? 2 : 1;
+
             master.SpawnBabies(numOfKids);
 
             master.SwitchState(master.recallState);

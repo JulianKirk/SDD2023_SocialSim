@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.IO;
 using Newtonsoft.Json;
+using TMPro;
 
 public class WorldManager : MonoBehaviour //GenericSingleton<WorldManager>
 {
@@ -14,6 +15,8 @@ public class WorldManager : MonoBehaviour //GenericSingleton<WorldManager>
 
     public int TimeGoal; //This will be set in the "Create new simulation" in-game menu (in years)
     public static int YearsPassed = 0; //In years
+    public TMP_Text YearsPassedText;
+    public TMP_Text TimeGoalText;
 
     public static float secondsPerYr = 360f; //Each month is 30 seconds
 
@@ -42,6 +45,7 @@ public class WorldManager : MonoBehaviour //GenericSingleton<WorldManager>
         
         RESULTS.deathsByCauses.Add("Starvation", 0);
         RESULTS.deathsByCauses.Add("Childbirth", 0);
+        RESULTS.deathsByCauses.Add("Disease", 0);
         RESULTS.populationByYear.Add(YearsPassed, 0);
         RESULTS.housesBuiltByYear.Add(YearsPassed, 0);
         RESULTS.housesByYear.Add(YearsPassed, 0);
@@ -56,6 +60,8 @@ public class WorldManager : MonoBehaviour //GenericSingleton<WorldManager>
     void Start()
     {
         HumanHolder = GameObject.Find("HumanHolder").transform;
+
+        YearsPassedText.text = "0";
 
         //Fetch simulation data created in the "Create new simulation" menu
         string savePath = Application.persistentDataPath + "/simData.json";
@@ -84,6 +90,11 @@ public class WorldManager : MonoBehaviour //GenericSingleton<WorldManager>
         {
             OnNewMonth?.Invoke();
 
+            if (HumanHolder.childCount < 1) 
+            {
+                FinishSimulation();
+            }
+
             timeSinceLastMonth = 0;
         }
 
@@ -105,6 +116,8 @@ public class WorldManager : MonoBehaviour //GenericSingleton<WorldManager>
 
         YearsPassed ++;
 
+        YearsPassedText.text = YearsPassed.ToString();
+
         if (YearsPassed >= TimeGoal) 
         {
             FinishSimulation();
@@ -120,8 +133,10 @@ public class WorldManager : MonoBehaviour //GenericSingleton<WorldManager>
         OnNewYear?.Invoke();
     }
 
-    void FinishSimulation() //Transition to the next Results menu scene
+    public void FinishSimulation() //Transition to the next Results menu scene
     {
+        RESULTS.totalYears = YearsPassed;
+
         string savePath = Application.persistentDataPath + "/simResults.json";
 
         string jsonText = JsonConvert.SerializeObject(RESULTS);
@@ -155,7 +170,7 @@ public class WorldManager : MonoBehaviour //GenericSingleton<WorldManager>
 
             SpawnHuman(humanPrefab, homeObject, xSpawnPos, ySpawnPos, iq, str, age);
 
-            HousePositions.Add(new Vector2Int(xSpawnPos, ySpawnPos));
+            // HousePositions.Add(new Vector2Int(xSpawnPos, ySpawnPos));
         }
     }
 
@@ -168,12 +183,17 @@ public class WorldManager : MonoBehaviour //GenericSingleton<WorldManager>
         newHuman.OnSpawn(new Vector2Int(xPos, yPos), homeObject, iq, str, age);
 
         RESULTS.totalPopulation += 1;
+
+        HousePositions.Add(new Vector2Int(xPos, yPos));
     }
 
     void StartSimulation(SimData data) 
     {
+        //Set the time target and display it on the top bar
         TimeGoal = data.yearTarget;
+        TimeGoalText.text = TimeGoal.ToString();
 
+        //Randomly generate seeds for heat and heigh maps for world generation
         int heatSeed = UnityEngine.Random.Range(0, 10000);
         int heightSeed = UnityEngine.Random.Range(0, 10000);
 
@@ -182,7 +202,7 @@ public class WorldManager : MonoBehaviour //GenericSingleton<WorldManager>
         int xSpawnPos = UnityEngine.Random.Range(0, data.mapSize);
         int ySpawnPos =  UnityEngine.Random.Range(0, data.mapSize);
 
-        while (!MapGenerator.walkableGrid[xSpawnPos, ySpawnPos]) 
+        while (!MapGenerator.walkableGrid[xSpawnPos, ySpawnPos]) //Ensures that xSpawnPos and ySpawnPos always end up somewhere walkable
         {
             xSpawnPos = UnityEngine.Random.Range(0, data.mapSize);
             ySpawnPos =  UnityEngine.Random.Range(0, data.mapSize);
@@ -190,8 +210,9 @@ public class WorldManager : MonoBehaviour //GenericSingleton<WorldManager>
 
         SpawnHumans(HumanPrefab, null, (int)data.numberOfHumans, xSpawnPos, ySpawnPos, 15, (int)data.intelligence, (int)data.strength, 20);
 
-        Camera.main.orthographicSize = data.mapSize/2;
-        Camera.main.transform.Translate(new Vector3((float)(data.mapSize/2 - 0.5f), (float)(data.mapSize/2 - 0.5f), 0f)); //Center the camera
+        //Start the simulation with the camera focused on the humans
+        Camera.main.orthographicSize = 5;
+        Camera.main.transform.position = new Vector3(xSpawnPos, ySpawnPos, Camera.main.transform.position.z);
         CamController.MapSize = data.mapSize;
     }
 
