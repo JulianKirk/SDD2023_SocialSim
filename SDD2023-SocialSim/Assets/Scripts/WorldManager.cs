@@ -224,6 +224,6 @@ public class WorldManager : MonoBehaviour //GenericSingleton<WorldManager>
 
         OptionsData optionsData = JsonConvert.DeserializeObject<OptionsData>(jsonText);
 
-        CamController.CameraPanSensitivity = optionsData.panSensitivity/2; //Too high otherwise
+        CamController.CameraPanSensitivity = optionsData.panSensitivity/4; //Too high otherwise
     }
 }

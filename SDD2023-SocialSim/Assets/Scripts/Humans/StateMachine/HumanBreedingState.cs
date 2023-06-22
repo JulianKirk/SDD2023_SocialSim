@@ -32,7 +32,7 @@ public class HumanBreedingState : State<HumanStateManager>
     {
         Debug.Log("Breeding complete");
 
-        if (master.m_sex == Sex.female && Random.Range(0, 100) < 10) 
+        if (master.m_sex == Sex.female && Random.Range(0, master.m_strength) < 10) //The stronger they are, the lower the chance of death to childbirth 
         {
             Debug.Log("Death from breeding");
 

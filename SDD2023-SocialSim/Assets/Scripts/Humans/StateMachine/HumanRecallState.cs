@@ -6,8 +6,6 @@ public class HumanRecallState : State<HumanStateManager> //Both humans and anima
 {
     public override void EnterState(HumanStateManager master) 
     {
-        Debug.Log("Going Home.");
-
         master.GeneratePath(master.homePosition.x, master.homePosition.y);
     }
 

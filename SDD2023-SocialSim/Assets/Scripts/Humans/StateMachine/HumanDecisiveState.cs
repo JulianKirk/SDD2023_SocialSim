@@ -22,7 +22,7 @@ public class HumanDecisiveState : State<HumanStateManager> //Both humans and ani
         }
         else if (master.homeOwner) //Prioritise creating a house
         {
-            if (master.m_inventory.GetFoodWeight() > 50f && master.houseInventory.m_currentWeight > (30 * (master.NumberOfChildren + 1)))
+            if (master.homeOwner && (master.m_inventory.GetFoodWeight() > 40f || master.houseInventory.GetFoodWeight() > 25f))
                 //They will try to have new children if they are able to support them
             {
                 master.SwitchState(master.seekPartnerState);

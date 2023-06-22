@@ -101,13 +101,13 @@ public class HumanStateManager : EntityStateManager
     {
         base.Start();
 
-        m_inventory.Add(Item.Fruit, 40f);
-        m_inventory.Add(Item.Meat, 40f);
+        m_inventory.Add(Item.Fruit, 60f);
+        // m_inventory.Add(Item.Meat, 40f);
 
         m_currentState.EnterState(this);
     }
 
-    public void OnSpawn(Vector2Int homePos, GameObject homeObject, int iq, int str, int age) // For parents it will input an average with a deviation 
+    public void OnSpawn(Vector2Int homePos, GameObject homeObject, int iq, int str, int age) 
     {
         m_intMultiplier = iq;
         m_strMultiplier = str;
@@ -116,11 +116,9 @@ public class HumanStateManager : EntityStateManager
 
         m_sex = Random.Range(0, 2) == 1 ? Sex.male : Sex.female;
 
-        Debug.Log("Sex: " + m_sex);
-
         switch(m_sex)
         {
-            case Sex.male:
+            case Sex.male: //Randomly pick a sprite from 4 colours
                 gameObject.GetComponent<SpriteRenderer>().sprite = maleSprites[Random.Range(0, maleSprites.Length)];
                 break;
             case Sex.female:
@@ -156,6 +154,12 @@ public class HumanStateManager : EntityStateManager
     protected override void OnNewYear()
     {
         m_age++;
+
+        if(Random.Range(0, m_age) > 40)  //Old age increases likelihood of death by disease
+        {
+            WorldManager.RESULTS.deathsByCauses["Disease"] += 1;
+            Die();
+        }
 
         m_intelligence += (float)m_intMultiplier / (5 * m_age);
         m_strength += (float)m_strMultiplier / (5 * m_age);
@@ -242,7 +246,7 @@ public class HumanStateManager : EntityStateManager
 
         animalSense = Physics2D.OverlapCircle(transform.position, m_vision, enemies);
 
-        Debug.Log("Current state: " + m_currentState);
+        // Debug.Log("Current state: " + m_currentState);
 
         // if (animalSense != null && m_currentState != huntingState) 
         // {
