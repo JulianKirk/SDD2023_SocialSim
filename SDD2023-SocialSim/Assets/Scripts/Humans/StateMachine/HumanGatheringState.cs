@@ -11,7 +11,7 @@ public class HumanGatheringState : State<HumanStateManager>
 
     int currentTargetedResourceMask; //Layer masks are just bitmasks
 
-    float searchInterval = 5f;
+    float searchInterval;
     float timeSinceLastSearch;
 
     float gatherInteval = 1f;
@@ -23,6 +23,7 @@ public class HumanGatheringState : State<HumanStateManager>
 
     enum GatheringStates //It would probably be better to use a hierarchical state machine instead 
     {
+        Relocating,
         Searching,
         Gathering
     }
@@ -32,6 +33,8 @@ public class HumanGatheringState : State<HumanStateManager>
     public override void EnterState(HumanStateManager master) 
     {
         SetResourceTarget(master.currentResourceTargets);
+
+        searchInterval = Random.Range(3f, 9f);
 
         timeSinceLastGather = 0f;
 
@@ -48,8 +51,12 @@ public class HumanGatheringState : State<HumanStateManager>
         }
         else
         {
+            int resourceTarget = Random.Range(0, master.currentResourceTargets.Count);
+
+            currentState = GatheringStates.Relocating;
+            master.GeneratePath(master.lastSeenResourceLocations[master.currentResourceTargets[resourceTarget]].x, master.lastSeenResourceLocations[master.currentResourceTargets[resourceTarget]].y);
             // currentTargetedResourceInstance = null;
-            master.Wander(15);
+            // master.Wander((int)master.m_vision);
         }
     }
 
@@ -57,6 +64,21 @@ public class HumanGatheringState : State<HumanStateManager>
     {        
         switch(currentState) 
         {
+            case GatheringStates.Relocating: // Go to where that resource was first seen
+            {
+                resourceSense = Physics2D.OverlapCircle(master.transform.position, master.m_vision, currentTargetedResourceMask);
+
+                if (resourceSense == null) 
+                {
+                    currentState = GatheringStates.Searching;
+                } 
+                else if (Mathf.Abs(master.lastSeenResourceLocations[master.currentResourceTargets[0]].x - master.transform.position.x) <= 1.15f 
+                    && Mathf.Abs(master.lastSeenResourceLocations[master.currentResourceTargets[0]].y - master.transform.position.y) <= 1.15f) //Check if the human is already at the resource
+                {
+                    currentState = GatheringStates.Searching;
+                }
+                break;
+            }
             case GatheringStates.Searching: 
             {
 
@@ -86,8 +108,9 @@ public class HumanGatheringState : State<HumanStateManager>
                     }
                     else if(timeSinceLastSearch <= 0) 
                     {
-                        master.Wander(15);
+                        master.Wander((int)master.m_vision);
 
+                        searchInterval = Random.Range(3f, 9f);
                         timeSinceLastSearch = searchInterval;
                     }
                 } 
@@ -99,6 +122,8 @@ public class HumanGatheringState : State<HumanStateManager>
                     resourceInventory = currentTargetedResourceInstance.GetComponent<Resource>().m_inventory;
 
                     currentTargetedResourceType = currentTargetedResourceInstance.GetComponent<Resource>().ResourceType;
+
+                    master.lastSeenResourceLocations[currentTargetedResourceType] =  new Vector2Int((int)currentTargetedResourceInstance.transform.position.x, (int)currentTargetedResourceInstance.transform.position.y);
 
                     timeSinceLastSearch = 0f;
 

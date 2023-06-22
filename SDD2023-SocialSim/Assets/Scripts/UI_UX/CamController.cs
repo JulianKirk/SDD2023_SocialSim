@@ -4,7 +4,9 @@ using UnityEngine;
 
 public class CamController : MonoBehaviour
 {
-    public float Sensitivity;
+    public static float CameraPanSensitivity = 0.5f;
+
+    public static int MapSize;
 
     Vector3 earlyMousePos;
     Vector3 lateMousePos;
@@ -17,8 +19,10 @@ public class CamController : MonoBehaviour
         {
             lateMousePos = Input.mousePosition;
 
-            transform.Translate(-(lateMousePos - earlyMousePos) * Sensitivity * (Camera.main.orthographicSize/40));
-            // transform.position += Camera.main.ScreenToViewportPoint(earlyMousePos) - Camera.main.ScreenToViewportPoint(lateMousePos);
+            transform.Translate(-(lateMousePos - earlyMousePos) * CameraPanSensitivity * (Camera.main.orthographicSize/40));
+            transform.position = new Vector3(Mathf.Clamp(transform.position.x, -0.5f, MapSize - 1), Mathf.Clamp(transform.position.y, -0.5f, MapSize - 1), transform.position.z);
+            // Mathf.Clamp(transform.position.y, -0.5f, MapSize - 1);
+            // transform.position += -(lateMousePos - earlyMousePos) * CameraPanSensitivity * (Camera.main.orthographicSize/40);
 
             earlyMousePos = Input.mousePosition;
         } 
@@ -34,7 +38,7 @@ public class CamController : MonoBehaviour
 
             // Camera.main.orthographicSize  
 
-            Camera.main.orthographicSize = Mathf.Clamp(Camera.main.orthographicSize - Input.mouseScrollDelta.y, 5f, 50f);
+            Camera.main.orthographicSize = Mathf.Clamp(Camera.main.orthographicSize - Input.mouseScrollDelta.y, 5f, MapGenerator.MapHeight/2);
         }
     }
 }

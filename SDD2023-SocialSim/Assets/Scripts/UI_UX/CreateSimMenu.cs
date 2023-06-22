@@ -14,11 +14,13 @@ public class CreateSimMenu : MonoBehaviour
     public Slider IntelligenceSlider;
     public Slider StrengthSlider;
     public Slider HumanNumberSlider;
+    public Slider YearNumberSlider;
     public Slider MapSizeSlider;
 
     public TMP_Text IntelligenceText;
     public TMP_Text StrengthText;
     public TMP_Text HumanNumberText;
+    public TMP_Text YearNumberText;
     public TMP_Text MapSizeText;
 
     public GameObject mainMenu;
@@ -30,7 +32,7 @@ public class CreateSimMenu : MonoBehaviour
 
     public void StartSimulation() //Added to the OnValueChange events on the sliders in the editor
     {
-        SimData dataToSave = new SimData(HumanNumberSlider.value, (int)MapSizeSlider.value, IntelligenceSlider.value, StrengthSlider.value);
+        SimData dataToSave = new SimData(HumanNumberSlider.value, (int)MapSizeSlider.value, IntelligenceSlider.value, StrengthSlider.value, (int)YearNumberSlider.value);
 
         string jsonText = JsonConvert.SerializeObject(dataToSave);
 
@@ -57,6 +59,11 @@ public class CreateSimMenu : MonoBehaviour
     public void UpdateMapSizeText() 
     {
         MapSizeText.text = ((int)MapSizeSlider.value).ToString();
+    }
+
+    public void UpdateYearNumberText()
+    {
+        YearNumberText.text = ((int)YearNumberSlider.value).ToString();
     }
 
     public void ExitMenu() 

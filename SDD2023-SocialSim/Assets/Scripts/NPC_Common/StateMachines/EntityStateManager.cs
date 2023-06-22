@@ -24,8 +24,6 @@ public abstract class EntityStateManager : MonoBehaviour
     {
         rBody = gameObject.GetComponent<Rigidbody2D>();
 
-        // WorldManager.instance.OnNewYear += OnNewYear;
-
         homePosition = new Vector2Int((int)transform.position.x, (int)transform.position.y); //Set the initial home position to be where the entity first spawns
     }
 
@@ -152,7 +150,7 @@ public abstract class EntityStateManager : MonoBehaviour
     {
         rBody.velocity = new Vector2(0f, 0f); //reset speed to zero
         currentTarget = null;
-        currentPath = null;
+        currentPath.Clear();
         currentPathIndex = 0;
     }
 }

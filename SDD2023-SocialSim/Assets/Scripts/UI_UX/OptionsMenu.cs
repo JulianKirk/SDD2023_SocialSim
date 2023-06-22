@@ -16,8 +16,9 @@ public class OptionsMenu : MonoBehaviour
     public AudioMixer MainMixer;
 
     public GameObject mainMenu;
+    public GameObject optionsMenu;
 
-    void Awake()
+    void Start()
     {
         savePath = Application.persistentDataPath + "/options.json";
         
@@ -27,7 +28,7 @@ public class OptionsMenu : MonoBehaviour
 
             File.WriteAllText(savePath, jsonText);
 
-            MainMixer.SetFloat("Master", (0.5f * 80) - 80);
+            MainMixer.SetFloat("Master", (Mathf.Log(50, 10) * 40f) - 80f);
         } 
         else //Load previously saved data 
         {
@@ -38,7 +39,8 @@ public class OptionsMenu : MonoBehaviour
             MasterVolume.value = optionsData.masterVolume;
             PanSensitivity.value = optionsData.panSensitivity;
 
-            MainMixer.SetFloat("Master", (optionsData.masterVolume * 80) - 80);
+            // MainMixer.SetFloat("Master", (optionsData.masterVolume * 80) - 80);
+            MainMixer.SetFloat("Master", (Mathf.Log(optionsData.masterVolume, 10) * 40f) - 80f);
         }
     }
 
@@ -50,12 +52,12 @@ public class OptionsMenu : MonoBehaviour
 
         File.WriteAllText(savePath, jsonText);
 
-        MainMixer.SetFloat("Master", (dataToSave.masterVolume * 80) - 80);
+        MainMixer.SetFloat("Master", (Mathf.Log(dataToSave.masterVolume, 10) * 40f) - 80f);
     }
 
     public void ExitMenu() 
     {
         mainMenu.SetActive(true);        
-        gameObject.SetActive(false);        
+        optionsMenu.SetActive(false);        
     }
 }

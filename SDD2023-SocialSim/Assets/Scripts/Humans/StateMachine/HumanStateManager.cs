@@ -72,6 +72,7 @@ public class HumanStateManager : EntityStateManager
     public HumanDecisiveState decisiveState = new HumanDecisiveState();
 
     public List<Item> currentResourceTargets = new List<Item>();
+    public Dictionary<Item, Vector2Int> lastSeenResourceLocations = new Dictionary<Item, Vector2Int>();
 
     protected override void Awake() 
     {
@@ -97,8 +98,8 @@ public class HumanStateManager : EntityStateManager
     {
         base.Start();
 
-        m_inventory.Add(Item.Fruit, 300f);
-        m_inventory.Add(Item.Meat, 300f);
+        m_inventory.Add(Item.Fruit, 40f);
+        m_inventory.Add(Item.Meat, 40f);
 
         m_currentState.EnterState(this);
     }
@@ -114,8 +115,8 @@ public class HumanStateManager : EntityStateManager
 
         Debug.Log("Sex: " + m_sex);
 
-        m_intelligence = -m_age * (m_age - 100f) * (0.03f);
-        m_strength = -m_age * (m_age - 100f) * (0.03f);
+        m_intelligence = -m_age * (m_age - 100f) * (0.03f) + 0.5f;
+        m_strength = -m_age * (m_age - 100f) * (0.03f) + 0.5f;
         m_speed = /*-m_age * (m_age - 100f) * (0.001f);*/ Mathf.Log10(m_age + 1) + 1;
 
 
@@ -128,6 +129,12 @@ public class HumanStateManager : EntityStateManager
         hasPartner = false;
         
         NumberOfChildren = 0;
+
+        //Start off exploring around their home
+        lastSeenResourceLocations.Add(Item.Wood, homePosition);
+        lastSeenResourceLocations.Add(Item.Stone, homePosition);
+        lastSeenResourceLocations.Add(Item.Fruit, homePosition);
+        lastSeenResourceLocations.Add(Item.Meat, homePosition);
     }
 
     protected override void OnNewYear()
@@ -173,6 +180,9 @@ public class HumanStateManager : EntityStateManager
         if ((m_inventory.GetFoodWeight()) < (-m_age * (m_age - 100f) * (0.006f))) //They starve if they don't have enough food
         {
             Debug.Log("I starved during the " + m_currentState + " state.");
+
+            WorldManager.RESULTS.deathsByCauses["Starvation"] += 1;
+
             Die();
         } 
         else 
@@ -256,7 +266,9 @@ public class HumanStateManager : EntityStateManager
             WorldManager.HumanCollective.Remove(this);
         }
 
-        WorldManager.yearlyDeathCount += 1;
+        WorldManager.HumanCollective.Remove(this);
+        WorldManager.RESULTS.totalDeaths += 1;
+        WorldManager.RESULTS.deathsByYear[WorldManager.YearsPassed] += 1;
 
         base.Die();
     }
@@ -266,6 +278,9 @@ public class HumanStateManager : EntityStateManager
         houseObject = Instantiate(housePrefab, new Vector3((int)transform.position.x, (int)transform.position.y, 0), Quaternion.identity);
 
         WorldManager.HousePositions.Add(homePosition);
+
+        WorldManager.RESULTS.totalHousesBuilt += 1;
+        WorldManager.RESULTS.housesBuiltByYear[WorldManager.YearsPassed] += 1;
     }
 
     public void SpawnBabies(int kidNum) 
@@ -275,8 +290,14 @@ public class HumanStateManager : EntityStateManager
 
         for (int n = 0; n < kidNum; n++) 
         {
-            WorldManager.SpawnHuman(this, houseObject, xTarget, yTarget, 50, 50, 0);
+            int newIQ = m_intMultiplier + Random.Range(-20, 20);
+            int newSTR = m_strMultiplier + Random.Range(-20, 20);
+
+            WorldManager.SpawnHuman(this, houseObject, xTarget, yTarget, newIQ, newSTR, 0);
         }
+
+        WorldManager.RESULTS.totalBirths += kidNum;
+        WorldManager.RESULTS.birthsByYear[WorldManager.YearsPassed] += kidNum;
 
         NumberOfChildren++;
     }

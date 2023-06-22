@@ -12,11 +12,10 @@ public class WorldManager : MonoBehaviour //GenericSingleton<WorldManager>
 
     // public static WorldManager instance { get { return _instance.Value; } }
 
-    public int TimeGoal = 100000; //This will be set in the "Create new simulation" in-game menu (in years)
-    int YearsPassed = 0; //In years
+    public int TimeGoal; //This will be set in the "Create new simulation" in-game menu (in years)
+    public static int YearsPassed = 0; //In years
 
-    // public static float yrsPerSecond = 1/12; //Set in the "Create new simulation" menu
-    public static float secondsPerYr = 360f; //Set in the "Create new simulation" menu
+    public static float secondsPerYr = 360f; //Each month is 30 seconds
 
     float timeSinceLastYear = 0f;
     float timeSinceLastMonth = 0f;
@@ -31,21 +30,32 @@ public class WorldManager : MonoBehaviour //GenericSingleton<WorldManager>
 
     public static List<HumanStateManager> HumanCollective = new List<HumanStateManager>();
     public static List<Vector2Int> HousePositions = new List<Vector2Int>();
-
-    public static int yearlyDeathCount;
-    Dictionary<int, int> deathCountsByYear = new Dictionary<int, int>();
     
     public MapGenerator mapGenerator; //Assigned in editor
 
-    // public static Vector2Int CivilizationCenter;
+    public static ResultsData RESULTS;
 
     // Start is called before the first frame update
+    void Awake()
+    {
+        RESULTS = new ResultsData();
+        
+        RESULTS.deathsByCauses.Add("Starvation", 0);
+        RESULTS.deathsByCauses.Add("Childbirth", 0);
+        RESULTS.populationByYear.Add(YearsPassed, 0);
+        RESULTS.housesBuiltByYear.Add(YearsPassed, 0);
+        RESULTS.housesByYear.Add(YearsPassed, 0);
+        RESULTS.deathsByYear.Add(YearsPassed, 0);
+        RESULTS.birthsByYear.Add(YearsPassed, 0);
+
+        YearsPassed = 0; //Always start at zero
+
+        RetrieveOptions();
+    }
     
     void Start()
     {
         HumanHolder = GameObject.Find("HumanHolder").transform;
-
-        yearlyDeathCount = 0;
 
         //Fetch simulation data created in the "Create new simulation" menu
         string savePath = Application.persistentDataPath + "/simData.json";
@@ -64,6 +74,7 @@ public class WorldManager : MonoBehaviour //GenericSingleton<WorldManager>
 
         if (timeSinceLastYear > secondsPerYr) 
         {
+            Debug.Log("NEW YEAR");
             StartNewYear();
 
             timeSinceLastYear = 0;
@@ -88,31 +99,40 @@ public class WorldManager : MonoBehaviour //GenericSingleton<WorldManager>
 
     public void StartNewYear() 
     {
-        deathCountsByYear[YearsPassed] = yearlyDeathCount;
 
-        yearlyDeathCount = 0;
+        RESULTS.housesByYear[YearsPassed] += HousePositions.Count;
+        RESULTS.populationByYear[YearsPassed] += HumanCollective.Count;
 
         YearsPassed ++;
 
-        if (YearsPassed > TimeGoal) 
+        if (YearsPassed >= TimeGoal) 
         {
             FinishSimulation();
             return;
         }
+
+        RESULTS.populationByYear.Add(YearsPassed, 0);
+        RESULTS.housesBuiltByYear.Add(YearsPassed, 0);
+        RESULTS.housesByYear.Add(YearsPassed, 0);
+        RESULTS.deathsByYear.Add(YearsPassed, 0);
+        RESULTS.birthsByYear.Add(YearsPassed, 0);
 
         OnNewYear?.Invoke();
     }
 
     void FinishSimulation() //Transition to the next Results menu scene
     {
-        //Make sure that the results are saved - either write to a JSON file or use a persistant singleton GameObject
+        string savePath = Application.persistentDataPath + "/simResults.json";
 
-        //Change Scene
+        string jsonText = JsonConvert.SerializeObject(RESULTS);
+
+        File.WriteAllText(savePath, jsonText);
+
+        SceneManager.LoadScene(2);
     }
 
     public static void SpawnHumans(HumanStateManager humanPrefab, GameObject homeObject, int numOfHumans, int xPos, int yPos, int locationVariance, int iq, int str, int age) 
     {
-        // CivilizationCenter = new Vector2Int(xPos, yPos);
 
         for (int i = 0; i < numOfHumans; i++)
         {
@@ -146,10 +166,14 @@ public class WorldManager : MonoBehaviour //GenericSingleton<WorldManager>
         HumanCollective.Add(newHuman);
 
         newHuman.OnSpawn(new Vector2Int(xPos, yPos), homeObject, iq, str, age);
+
+        RESULTS.totalPopulation += 1;
     }
 
     void StartSimulation(SimData data) 
     {
+        TimeGoal = data.yearTarget;
+
         int heatSeed = UnityEngine.Random.Range(0, 10000);
         int heightSeed = UnityEngine.Random.Range(0, 10000);
 
@@ -164,6 +188,21 @@ public class WorldManager : MonoBehaviour //GenericSingleton<WorldManager>
             ySpawnPos =  UnityEngine.Random.Range(0, data.mapSize);
         }
 
-        SpawnHumans(HumanPrefab, null, 10, xSpawnPos, ySpawnPos, 15, (int)data.intelligence, (int)data.strength, 20);
+        SpawnHumans(HumanPrefab, null, (int)data.numberOfHumans, xSpawnPos, ySpawnPos, 15, (int)data.intelligence, (int)data.strength, 20);
+
+        Camera.main.orthographicSize = data.mapSize/2;
+        Camera.main.transform.Translate(new Vector3((float)(data.mapSize/2 - 0.5f), (float)(data.mapSize/2 - 0.5f), 0f)); //Center the camera
+        CamController.MapSize = data.mapSize;
+    }
+
+    void RetrieveOptions() 
+    {
+        string path = Application.persistentDataPath + "/options.json";
+
+        string jsonText = File.ReadAllText(path);
+
+        OptionsData optionsData = JsonConvert.DeserializeObject<OptionsData>(jsonText);
+
+        CamController.CameraPanSensitivity = optionsData.panSensitivity/2; //Too high otherwise
     }
 }

@@ -11,6 +11,9 @@ public class MapGenerator : MonoBehaviour
 
     public static bool[,] walkableGrid;
 
+    public static int MapHeight;
+    public static int MapWidth;
+
     public GameObject[] stoneResources;
     public GameObject[] woodResources;
     public GameObject[] fruitResources;
@@ -36,6 +39,9 @@ public class MapGenerator : MonoBehaviour
 
     public void GenerateMap(int mapWidth, int mapLength, int heightSeed, int heatSeed, float frequency, float horizontalDilation, float verticalDilation) 
     {
+        MapHeight = mapLength;
+        MapWidth = mapWidth;
+
         walkableGrid = new bool[mapWidth, mapLength];
 
         WorldManager.landOwned = new bool[mapWidth, mapLength];
@@ -148,19 +154,19 @@ public class MapGenerator : MonoBehaviour
                 switch(mapResourceClasses[x, y])
                 {
                     case TileResourceClass.Stone: 
-                        if (Random.Range(0, 100) < 5)
+                        if (Random.Range(0, 100) < 7)
                         {
                             Instantiate(stoneResources[Random.Range(0, stoneResources.Length)], new Vector3(x, y, 0), Quaternion.identity);
                         }
                         break;
                     case TileResourceClass.Wood: 
-                        if (Random.Range(0, 100) < 13)
+                        if (Random.Range(0, 100) < 25)
                         {
                             Instantiate(woodResources[Random.Range(0, woodResources.Length)], new Vector3(x, y, 0), Quaternion.identity);
                         }
                         break;
                     case TileResourceClass.Fruit: 
-                        if (Random.Range(0, 100) < 10)
+                        if (Random.Range(0, 100) < 12)
                         {
                             Instantiate(fruitResources[Random.Range(0, fruitResources.Length)], new Vector3(x, y, 0), Quaternion.identity);
                         }
@@ -183,5 +189,10 @@ public class MapGenerator : MonoBehaviour
         m_noise.SetFractalOctaves(5);
 
         // GenerateMap(100, 100, 983, 920, 1f, 1f, 1f);
+    }
+    
+    void Start()
+    {
+        WorldManager.OnNewYear += GenerateNewResources;
     }
 }

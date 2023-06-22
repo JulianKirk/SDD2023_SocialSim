@@ -36,7 +36,10 @@ public class HumanBreedingState : State<HumanStateManager> //Both humans and ani
         if (master.m_sex == Sex.female && Random.Range(0, 100) < 10) 
         {
             Debug.Log("Death from breeding");
-            master.Die(); 
+
+            WorldManager.RESULTS.deathsByCauses["Childbirth"] += 1;
+
+            master.Die();
         }
     }
 }
